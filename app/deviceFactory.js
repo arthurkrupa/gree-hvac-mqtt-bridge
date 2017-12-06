@@ -213,6 +213,17 @@ class Device {
     };
     
     /**
+     * Turn on/off
+     * @param {boolean} value State
+     */
+    setPower (value) {
+        this._sendCommand(
+            [cmd.power.code],
+            [value ? 1 : 0]
+        );
+    };
+    
+    /**
      * Set temperature
      * @param {number} value Temperature
      * @param {number} [unit=0] Units (defaults to Celsius)
@@ -221,6 +232,39 @@ class Device {
         this._sendCommand(
             [cmd.temperatureUnit.code, cmd.temperature.code],
             [unit, value]
+        );
+    };
+    
+    /**
+     * Set mode
+     * @param {number} value Mode value (0-4)
+     */
+    setMode (value) {
+        this._sendCommand(
+            [cmd.mode.code],
+            [value]
+        );
+    };
+    
+    /**
+     * Set fan speed
+     * @param {number} value Fan speed value (0-5)
+     */
+    setFanSpeed (value) {
+        this._sendCommand(
+            [cmd.fanSpeed.code],
+            [value]
+        );
+    };
+    
+    /**
+     * Set vertical swing
+     * @param {number} value Vertical swing value (0-11)
+     */
+    setSwingVert (value) {
+        this._sendCommand(
+            [cmd.swingVert.code],
+            [value]
         );
     };
     
