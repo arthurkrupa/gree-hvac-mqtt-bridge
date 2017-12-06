@@ -57,6 +57,8 @@ class Device {
 
             client.setBroadcast(true);
             client.send(message, 0, message.length, 7000, address);
+
+            console.log('[UDP] Connected to device at %s', address);
         });
     }
 
@@ -75,7 +77,7 @@ class Device {
         this.device.bound = false;
         this.device.props = {};
 
-        console.log('New device registered', this.device.name);
+        console.log('[UDP] New device registered: %s', this.device.name);
     }
 
     /**
@@ -108,7 +110,7 @@ class Device {
     _confirmBinding(id, key) {
         this.device.bound = true;
         this.device.key = key;
-        console.log('Device is bound!', this.device.name);
+        console.log('[UDP] Device %s is bound!', this.device.name);
     }
 
     /**
@@ -173,7 +175,7 @@ class Device {
             return;
         }
         
-        console.log('Unknown message %s', pack.t, message, pack);
+        console.log('[UDP] Unknown message of type %s: %s, %s', pack.t, message, pack);
     }
 
     /**
