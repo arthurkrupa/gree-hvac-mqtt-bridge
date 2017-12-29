@@ -96,6 +96,16 @@ docker build \
 docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 ```
 
+## Configuring HVAC WiFi
+
+1. Make sure your HVAC is running in AP mode. You can reset the WiFi config by pressing MODE +WIFI (or MODE + TURBO) on the AC remote for 5s.
+2. Connect with the AP wifi network (the SSID name should be a 8-character alfanumeric, e.g. "u34k5l166").
+3. Run the following in your UNIX terminal:
+
+```shell
+echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"wlan\"}" | nc -cu 192.168.1.1 7000
+````
+
 ## License
 
 This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) file for details
