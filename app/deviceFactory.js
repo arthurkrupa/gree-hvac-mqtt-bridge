@@ -1,7 +1,7 @@
 'use strict';
 
 const dgram = require('dgram');
-const client = dgram.createSocket('udp4');
+const socket = dgram.createSocket('udp4');
 const encryptionService = require('./encryptionService')();
 const cmd = require('./commandEnums');
 
@@ -44,7 +44,7 @@ class Device {
         this._connectToDevice(this.options.host);
         
         // Handle incoming messages
-        client.on('message', (msg, rinfo) => this._handleResponse(msg, rinfo));
+        socket.on('message', (msg, rinfo) => this._handleResponse(msg, rinfo));
     }
 
     /**
@@ -52,14 +52,23 @@ class Device {
      * @param {string} address - IP/host address 
      */
     _connectToDevice(address) {
-        client.bind(() => {
-            const message = new Buffer(JSON.stringify({t: 'scan'}));
+        try {
+            socket.bind(() => {
+                const message = new Buffer(JSON.stringify({t: 'scan'}));
 
-            client.setBroadcast(true);
-            client.send(message, 0, message.length, 7000, address);
+                socket.setBroadcast(true);
+                socket.send(message, 0, message.length, 7000, address);
 
-            console.log('[UDP] Connected to device at %s', address);
-        });
+                console.log('[UDP] Connected to device at %s', address);
+            });
+        } catch (err) {
+            const timeout = 60
+
+            console.log('[UDP] Unable to connect (' + err.message + '). Retrying in ' + timeout + 's...');
+            setTimeout(() => {
+                this._connectToDevice(address);
+            }, timeout * 1000);
+        }
     }
 
     /**
@@ -99,7 +108,7 @@ class Device {
             pack: encryptedBoundMessage
         };
         const toSend = new Buffer(JSON.stringify(request));
-        client.send(toSend, 0, toSend.length, device.port, device.address);
+        socket.send(toSend, 0, toSend.length, device.port, device.address);
     }
 
     /**
@@ -211,7 +220,7 @@ class Device {
           pack: encryptedMessage
         };
         const serializedRequest = new Buffer(JSON.stringify(request));
-        client.send(serializedRequest, 0, serializedRequest.length, port, address);
+        socket.send(serializedRequest, 0, serializedRequest.length, port, address);
     };
     
     /**
