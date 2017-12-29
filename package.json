@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "minimist": "^1.2.0",
-    "mqtt": "^2.14.0"
+    "mqtt": "^2.15.0"
   },
   "engines": {
     "node": ">=8.2.1"
