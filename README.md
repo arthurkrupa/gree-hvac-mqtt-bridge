@@ -108,10 +108,16 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 
 ## Changelog
 
+[1.0.3]
+
+- Fix power off command
+
 [1.0.2]
+
 - Bump NodeJS version to 8.9.3
 
 [1.0.1]
+
 - Update MQTT version
 - Add UDP error handling
 - Extend Readme

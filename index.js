@@ -94,7 +94,7 @@ client.on('message', (topic, message) => {
     hvac.setSwingVert(commands.swingVert.value[message])
       return;
     case mqttTopicPrefix + '/power/set':
-      hvac.setPower(message);
+      hvac.setPower(parseInt(message));
       return;
   }
   console.log('[MQTT] No handler for topic %s', topic)
