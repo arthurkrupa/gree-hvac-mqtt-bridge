@@ -4,13 +4,13 @@ Bridge service for communicating with Gree air conditioners using MQTT broadcast
 
 ## Requirements
 
-- NodeJS (>=8.9.3) with NPM
+- NodeJS (>=8.11.0) with NPM
 - An MQTT broker and Gree smart HVAC device on the same network
 - Docker (for building Hass.io addon)
 
 ## Running locally
 
-Make sure you have NodeJS (>=8.9.3) installed and run the following (adjust the arguments to match your setup):
+Make sure you have NodeJS (>=8.11.0) installed and run the following (adjust the arguments to match your setup):
 
 ```shell
 npm install
@@ -107,6 +107,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 ````
 
 ## Changelog
+
+[1.0.4]
+
+- Bump NodeJS version to 8.11.2
 
 [1.0.3]
 
