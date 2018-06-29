@@ -3,7 +3,7 @@
 module.exports = {
     // power state of the device
     power: {
-        code: 'Pow',
+        code: 'boot',
         value: {
             off: 0,
             on: 1
@@ -11,18 +11,18 @@ module.exports = {
     },
     // mode of operation
     mode: {
-        code: 'Mod',
+        code: 'runMode',
         value: {
-            auto: 0,
-            cool: 1,
-            dry: 2,
-            fan: 3, 
-            heat: 4
+            auto: "000",
+            cool: "001",
+            dry: "110",
+            fan: "011",
+            heat: "100"
         }
     },
     // temperature unit (must be together with set temperature)
     temperatureUnit: {
-        code: 'TemUn',
+        code: 'temtyp',
         value: {
             celsius: 0,
             fahrenheit: 1
@@ -30,18 +30,17 @@ module.exports = {
     },
     // set temperature (must be together with temperature unit)
     temperature: {
-        code: 'SetTem'
+        code: 'indoorTemperature' //SetTem
     },
     // fan speed
     fanSpeed: {
-        code: 'WdSpd',
+        code: 'windMode', //WdSpd
         value: {
-            auto: 0,
-            low: 1,
-            mediumLow: 2,  // not available on 3-speed units
-            medium: 3,
-            mediumHigh: 4, // not available on 3-speed units
-            high: 5
+            auto: 0, //auto
+            low: 1, //1
+            mediumLow: 7, //quite //1 // not available on 3-speed units
+            medium: 6, //step less
+            high: 8 //turbo
         }
     },
     // fresh air valve
@@ -62,7 +61,7 @@ module.exports = {
     },
     // controls Health ("Cold plasma") mode, only for devices equipped with "anion generator", which absorbs dust and kills bacteria
     health: {
-        code: 'Health',
+        code: 'healthy', //Health
         value: {
             off: 0,
             on: 1
@@ -70,7 +69,7 @@ module.exports = {
     },
     // sleep mode, which gradually changes the temperature in Cool, Heat and Dry mode
     sleep: {
-        code: 'SwhSlp',
+        code: 'sleep',
         value: {
             off: 0,
             on: 1
@@ -78,7 +77,7 @@ module.exports = {
     },
     // turns all indicators and the display on the unit on or off
     lights: {
-        code: 'Lig',
+        code: 'lighting',
         value: {
             off: 0,
             on: 1
@@ -89,7 +88,7 @@ module.exports = {
         code: 'SwingLfRig',
         value: {
             default: 0
-            // TODO: remaining values
+                // TODO: remaining values
         }
     },
     // controls the swing mode of the vertical air blades
@@ -128,7 +127,7 @@ module.exports = {
     },
     // energy saving mode
     energySave: {
-        code: 'SvSt',
+        code: 'eco',
         value: {
             off: 0,
             on: 1
