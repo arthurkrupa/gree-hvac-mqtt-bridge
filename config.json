@@ -1,14 +1,14 @@
 {
-    "name": "Gree HVAC MQTT bridge",
-    "version": "1.0.3",
-    "slug": "gree_hvac_mqtt_bridge",
-    "description": "Hass.io addon for controlling Gree air conditioners using the MQTT climate platform",
+    "name": "Cooper&Huntrer HVAC MQTT bridge",
+    "version": "1.0.1",
+    "slug": "cooper_hunter_hvac_mqtt_bridge",
+    "description": "Hass.io addon for controlling Cooper&Huntrer air conditioners using the MQTT climate platform",
     "startup": "application",
     "boot": "auto",
     "options": {
-        "hvac_host": "192.168.1.255",
+        "hvac_host": "192.168.107.49",
         "mqtt": {
-            "broker_url": "mqtt://localhost",
+            "broker_url": "mqtt://192.168.111.100",
             "topic_prefix": "home/greehvac"
         }
     },
