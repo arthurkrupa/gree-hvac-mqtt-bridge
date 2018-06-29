@@ -1,11 +1,11 @@
-# Gree HVAC MQTT bridge
+# Cooper&Hunter HVAC MQTT bridge
 
-Bridge service for communicating with Gree air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
+Bridge service for communicating with Cooper&Hunter air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
 
 ## Requirements
 
 - NodeJS (>=8.9.3) with NPM
-- An MQTT broker and Gree smart HVAC device on the same network
+- An MQTT broker and Cooper&Hunter smart HVAC device on the same network
 - Docker (for building Hass.io addon)
 
 ## Running locally
@@ -33,7 +33,7 @@ climate:
   - platform: mqtt
 
     # Change to whatever you want
-    name: Gree HVAC
+    name: Cooper&Hunter HVAC
 
     # Change MQTT_TOPIC_PREFIX to what you've set in addon options
     current_temperature_topic: "MQTT_TOPIC_PREFIX/temperature/get"
@@ -108,24 +108,8 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 
 ## Changelog
 
-[1.0.3]
-
-- Fix power off command
-
-[1.0.2]
-
-- Bump NodeJS version to 8.9.3
-
 [1.0.1]
 
-- Update MQTT version
-- Add UDP error handling
-- Extend Readme
-
-[1.0.0]
-First release
-
-## License
 
 This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) file for details
 
