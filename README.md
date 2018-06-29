@@ -15,7 +15,7 @@ Make sure you have NodeJS (>=8.9.3) installed and run the following (adjust the 
 ```shell
 npm install
 node index.js \
-    --hvac-host="192.168.1.255" \
+    --hvac-host="192.168.107.49" \
     --mqtt-broker-url="mqtt://localhost" \
     --mqtt-topic-prefix="home/greehvac"
 ```
@@ -104,7 +104,7 @@ docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 
 ## Changelog
 
-[1.0.1]
+[1.0.1] - Initial Cooper&Hunter support. Work just reading info: mode, indoor temp.
 
 
 This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) file for details
