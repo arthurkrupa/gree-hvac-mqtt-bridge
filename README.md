@@ -39,7 +39,7 @@ climate:
   - platform: mqtt
 
     # Change to whatever you want
-    name: Cooper&Hunter HVAC
+    name: CooperHunter HVAC
 
     # Change MQTT_TOPIC_PREFIX to what you've set in addon options
     current_temperature_topic: "MQTT_TOPIC_PREFIX/temperature/get"
