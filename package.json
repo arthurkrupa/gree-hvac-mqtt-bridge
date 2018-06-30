@@ -1,6 +1,6 @@
 {
   "name": "cooper_hunter-hvac-mqtt-bridge",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "MQTT Bridge for controlling Cooper&Hunter smart air conditioners",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "net": "^1.0.2"
   },
   "engines": {
-    "node": ">=8.2.1"
+    "node": ">=8.11.0"
   },
   "os": [
     "darwin",
