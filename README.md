@@ -1,6 +1,12 @@
 # Cooper&Hunter HVAC MQTT bridge
 
-Bridge service for communicating with Cooper&Hunter air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
+Bridge service for communicating with Cooper&Hunter(Ch-s09ftn-e2wf) Nordic evo 2 series air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
+
+## Original app
+- [https://play.google.com/store/apps/details?id=net.conditioner.web]
+
+## Original Docs 
+- [http://cooperandhunter.com/ua/nordic_evo_two_instruction.pdf]
 
 ## Requirements
 
