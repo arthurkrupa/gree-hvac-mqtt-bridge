@@ -1,4 +1,3 @@
-ARG HVAC_HOST=192.168.107.49
 FROM homeassistant/amd64-base:latest
 
 ENV LANG C.UTF-8
@@ -15,4 +14,4 @@ RUN chmod +x run.sh
 RUN npm install
 
 #CMD [ "./run.sh" ]
-#ENTRYPOINT ./run.sh
+ENTRYPOINT ./run.sh
