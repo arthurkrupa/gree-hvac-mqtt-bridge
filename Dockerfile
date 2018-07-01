@@ -1,3 +1,4 @@
+ARG HVAC_HOST=192.168.107.49
 FROM homeassistant/amd64-base:latest
 
 ENV LANG C.UTF-8
@@ -12,4 +13,4 @@ COPY . .
 RUN chmod +x run.sh
 
 #CMD [ "./run.sh" ]
-ENTRYPOINT ./run.sh
+#ENTRYPOINT ./run.sh
