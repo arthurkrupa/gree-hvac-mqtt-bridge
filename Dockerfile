@@ -12,5 +12,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN chmod +x run.sh
 
+RUN npm install
+
 #CMD [ "./run.sh" ]
 ENTRYPOINT ./run.sh
