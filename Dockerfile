@@ -11,4 +11,4 @@ WORKDIR /usr/src/app
 COPY . .
 RUN chmod +x run.sh
 
-CMD [ "./run.sh" ]
+#CMD [ "./run.sh" ]
