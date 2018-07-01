@@ -24,7 +24,7 @@ class Device {
 
         //  Set defaults
         this.options = {
-            host: options.host || '192.168.1.255',
+            host: options.host || '192.168.111.255',
             onStatus: options.onStatus || function() {},
             onUpdate: options.onUpdate || function() {},
             onConnected: options.onConnected || function() {}
@@ -143,24 +143,10 @@ class Device {
     _requestDeviceStatus(device, that) {
         console.log("--in _requestDeviceStatus");
         let serializedRequest = new Buffer([0xAA, 0xAA, 0x12, 0xA0, 0x0A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1A]);
-        console.log(JSON.stringify(device));
-        // this._sendRequest(message, device.ip, device.port);
-
         var client = new net.Socket();
 
         client.on('data', (msg, rinfo) => this._handleResponse(msg, rinfo));
-        /*function(data) {
-                   console.log('Get Info from AC:');
-                   var bufView = new Uint8Array(data);
-                   var c = "";
-                   let cmd = [];
-                   for (var i = 0; i < bufView.length; i++) {
-                       c = c + " " + bufView[i];
-                       cmd.push(bufView[i]);
-                   }
-                   console.log(that._parseMessage(cmd));
-
-               });*/
+        
         client.on('listening', () => {
             const address = client.address();
             console.log(`server listening ${address.address}:${address.port}`);
@@ -185,11 +171,7 @@ class Device {
         //default discovery msg
         if (msg && msg[2] == 12 && msg[3] === 0x03) {
             const message = this._unpackCMD(rinfo.address, msg);
-            //console.log("mesage: " + JSON.stringify(message));
-
             this._setDevice(message.mac, message.name, rinfo.address, rinfo.port);
-
-            //setInterval(this._requestDeviceStatus.bind(this, this.device), 3000);
             this._requestDeviceStatus(this.device, this);
             this.options.onConnected(this.device);
             // this._sendBindRequest(this.device);
@@ -198,48 +180,7 @@ class Device {
             let statusMessage = this._parseMessage(msg);
             this.device.props = statusMessage;
             this.options.onStatus(this.device);
-            console.log(statusMessage);
-
         }
-
-        // Extract encrypted package from message using device key (if available)
-        //const pack = encryptionService.decrypt(message, (this.device || {}).key);
-
-        // If package type is response to handshake
-        //if (pack.t === 'dev') {
-
-        //return;
-        //}
-
-        // If package type is binding confirmation
-        /*if (pack.t === 'bindok' && this.device.id) {
-            this._confirmBinding(message.cid, message.secret);
-
-            // Start requesting device status on set interval
-            setInterval(this._requestDeviceStatus.bind(this, this.device), 3000);
-            this.options.onConnected(this.device)
-            return;
-        }
-            
-                // If package type is device status
-                if (pack.t === 'dat' && this.device.bound) {
-                    pack.cols.forEach((col, i) => {
-                        this.device.props[col] = pack.dat[i];
-                    });
-                    this.options.onStatus(this.device);
-                    return;
-                }
-
-                // If package type is response, update device properties
-                if (pack.t === 'res' && this.device.bound) {
-                    pack.opt.forEach((opt, i) => {
-                        this.device.props[opt] = pack.val[i];
-                    });
-                    this.options.onUpdate(this.device);
-                    return;
-                }
-        */
-        // console.log('[UDP] Unknown message of type: %s,', message);
     }
 
     /**
