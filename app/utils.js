@@ -136,14 +136,14 @@ module.exports = {
     },
 
     parseData4: function(byte) {
-        var bit = intToBit(byte);
+        var bit = this.intToBit(byte);
         var mute = bit[1]
         let mode = bit[2]
         var wenTwo = bit[3] + "" + bit[4] + "" + bit[5] + "" + bit[6] + "" + bit[7];
 
         let wdNumber = 0
         if (!!!mode) {
-            var wen = this.parseInt(wenTwo, 2);
+            var wen = parseInt(wenTwo, 2);
             wen = wen >= 16 ? wen - 16 : wen;
             wdNumber = wen > 0 ? wen + 16 : 16;
         } else {
@@ -158,7 +158,7 @@ module.exports = {
     },
 
     parseData5: function(byte) {
-        var bit = intToBit(byte);
+        var bit = this.intToBit(byte);
 
         var windLR = bit[0] + "" + bit[1] + "" + bit[2] + "" + bit[3];
         var windTB = bit[4] + "" + bit[5] + "" + bit[6] + "" + bit[7];
@@ -169,7 +169,7 @@ module.exports = {
     },
 
     parseData6: function(byte) {
-        var bit = intToBit(byte);
+        var bit = this.intToBit(byte);
         return {
             lighting: bit[0],
             healthy: bit[1],
@@ -218,13 +218,13 @@ module.exports = {
     },
 
     parseMessage: function(message) {
-        let data3 = parseData3(message[4 + 3])
-        let data4 = parseData4(message[4 + 4])
-        let data5 = parseData5(message[4 + 5])
-        let data6 = parseData6(message[4 + 6])
-        let data789 = parseData789(message[4 + 7], message[4 + 8], message[4 + 9])
-        let data10 = parseData10(message[4 + 10])
-        let data11And12 = parseData11And12(data4.temtyp, message[4 + 11], message[4 + 12])
+        let data3 = this.parseData3(message[4 + 3])
+        let data4 = this.parseData4(message[4 + 4])
+        let data5 = this.parseData5(message[4 + 5])
+        let data6 = this.parseData6(message[4 + 6])
+        let data789 = this.parseData789(message[4 + 7], message[4 + 8], message[4 + 9])
+        let data10 = this.parseData10(message[4 + 10])
+        let data11And12 = this.parseData11And12(data4.temtyp, message[4 + 11], message[4 + 12])
         let cpmode = data3.cpmode
         let mute = data4.mute
         let windMode = parseInt(data3.windLevel, 2)
@@ -273,16 +273,16 @@ module.exports = {
     cmd02: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 3;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[0] = val
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         if (!modify) {
-            cmd06(nowCmd, 0, true)
-            cmd03(nowCmd, 0, true)
+            this.cmd06(nowCmd, 0, true)
+            this.cmd03(nowCmd, 0, true)
         }
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd
     },
 
     cmd03: function(nowCmd, val, modify = false) {
@@ -291,22 +291,22 @@ module.exports = {
 
         let cmdPos = 4 + 3;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[1] = +val[0]
         bit[2] = +val[1]
         bit[3] = +val[2]
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         //if (_val == 6) {
         //  cmd04(nowCmd, 60, true)
         //}
 
         if (!modify) {
-            cmd06(nowCmd, 0, true)
-            cmd02(nowCmd, 0, true)
+            this.cmd06(nowCmd, 0, true)
+            this.cmd02(nowCmd, 0, true)
         }
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd
     },
 
     cmd04: function(nowCmd, val, modify = false) {
@@ -392,16 +392,16 @@ module.exports = {
     cmd06: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 4;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[1] = val //
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         if (!modify) {
-            cmd02(nowCmd, 0, true)
-            cmd03(nowCmd, 0, true)
+            this.cmd02(nowCmd, 0, true)
+            this.cmd03(nowCmd, 0, true)
         }
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd
     },
 
     cmd08: function(nowCmd, val, modify = false) {
@@ -417,7 +417,7 @@ module.exports = {
 
     cmd07: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 4;
-        let tempSt = parseData4(nowCmd[cmdPos])
+        let tempSt = this.parseData4(nowCmd[cmdPos])
         let val2 = ''
         if (!tempSt.temtyp) {
             let _val = val >= 16 ? val - 16 : val
