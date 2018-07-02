@@ -78,13 +78,13 @@ client.on('message', (topic, message) => {
             hvac.setTemp(parseInt(message));
             return;
         case mqttTopicPrefix + '/mode/set':
-            if (message === 'none') {
+            if (message === 'none' || message == "off") {
                 // Power off when "none" mode
-                hvac.setPower(commands.power.value.off)
+                hvac.setPower(commands.power.value.off) //
             } else {
                 // Power on and set mode if other than 'none'
                 if (hvac.device.props[commands.power.code] === commands.power.value.off) {
-                    hvac.setPower(commands.power.value.on)
+                    hvac.setPower(commands.power.value.on) //
                 }
                 hvac.setMode(commands.mode.value[message])
             }
@@ -96,7 +96,8 @@ client.on('message', (topic, message) => {
             hvac.setSwingVert(commands.swingVert.value[message])
             return;
         case mqttTopicPrefix + '/power/set':
-            hvac.setPower(parseInt(message));
+            console.log("in topic power set");
+            hvac.setPower(commands.power.value[message]);
             return;
     }
     console.log('[MQTT] No handler for topic %s', topic)
