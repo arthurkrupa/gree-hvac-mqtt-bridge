@@ -117,5 +117,4 @@ This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) 
 
 ## Acknowledgments
 
-- [tomikaa87](https://github.com/tomikaa87) for reverse-engineering the Gree protocol
-- [oroce](https://github.com/oroce) for inspiration
+- [arthurkrupa](https://github.com/arthurkrupa) for creating mqtt bridge
