@@ -246,9 +246,7 @@ class Device {
          } else {*/
         if (this.device.lastCmd)
             client.write(utils.cmd01(this.device.lastCmd, value));
-        else {
-            this._requestDeviceStatus(this.device, this);
-        }
+       
         // }
     };
 
