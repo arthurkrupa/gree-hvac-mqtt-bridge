@@ -187,6 +187,7 @@ class Device {
         } else {
             console.log("_handleResponse -> else");
             let statusMessage = this._parseMessage(msg);
+            console.log(statusMessage);
             this.device.lastCmd = msg;
             this.device.props = statusMessage;
             this.options.onStatus(this.device);
@@ -246,7 +247,9 @@ class Device {
          } else {*/
         if (this.device.lastCmd)
             client.write(utils.cmd01(this.device.lastCmd, value));
-       
+        //else {
+        //   this._requestDeviceStatus(this.device, this);
+        // }
         // }
     };
 
@@ -256,9 +259,10 @@ class Device {
      * @param {number} [unit=0] Units (defaults to Celsius)
      */
     setTemp(value, unit = cmd.temperatureUnit.value.celsius) {
-        this._sendCommand(
-            [cmd.temperatureUnit.code, cmd.temperature.code], [unit, value]
-        );
+        console.log('--In setTemp: ' + value);
+        if (this.device.lastCmd) {
+            client.write(utils.cmd07(this.device.lastCmd, value, false));
+        }
     };
 
     /**
