@@ -2,6 +2,27 @@
 
 Bridge service for communicating with Cooper&Hunter(Ch-s09ftn-e2wf) Nordic evo 2 series air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
 
+### Running addon locally
+
+Create an `./data/options.json` file inside the repo with persistent addon configuration.
+
+```shell
+docker run --rm -v "$PWD/data":/data cooper_hunter-hvac-mqtt-bridge
+```
+
+``` options file exapmle
+
+    {
+        "hvac_host": "192.168.107.49",
+        "mqtt": {
+            "broker_url": "mqtt://192.168.1.100",
+            "topic_prefix": "home/chhvac"
+        }
+    }
+
+```
+
+
 ## Original app
 - [https://play.google.com/store/apps/details?id=net.conditioner.web]
 
@@ -23,7 +44,7 @@ npm install
 node index.js \
     --hvac-host="192.168.107.49" \
     --mqtt-broker-url="mqtt://localhost" \
-    --mqtt-topic-prefix="home/greehvac"
+    --mqtt-topic-prefix="home/chhvac"
 ```
 
 ## Hass.io addon
@@ -90,17 +111,7 @@ climate:
 
 Hass.io doesn't supply an on/off switch. As a workaround, switch mode to "NONE" to power off or any other to power on.
 
-### Running addon locally
 
-Create an `./data/options.json` file inside the repo with persistent addon configuration.
-
-```shell
-docker build \
-    --build-arg BUILD_FROM="homeassistant/amd64-base:latest" \
-    -t gree-hvac-mqtt-bridge .
-
-docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
-```
 
 ## Configuring HVAC WiFi
 
