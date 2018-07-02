@@ -244,8 +244,11 @@ class Device {
                  client.write(utils.cmd01(this.lastCmd, 1));
              });
          } else {*/
-
-        client.write(utils.cmd01(this.device.lastCmd, value));
+        if (this.device.lastCmd)
+            client.write(utils.cmd01(this.device.lastCmd, value));
+        else {
+            this._requestDeviceStatus(this.device, this);
+        }
         // }
     };
 
