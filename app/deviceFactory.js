@@ -6,6 +6,11 @@ const encryptionService = require('./encryptionService')();
 const cmd = require('./commandEnums');
 const _ = require('lodash');
 var CryptoJS = require("crypto-js");
+const utils = require("./utils");
+
+const client = new net.Socket();
+
+
 
 /**
  * Class representing a single connected device
@@ -29,7 +34,12 @@ class Device {
             onUpdate: options.onUpdate || function() {},
             onConnected: options.onConnected || function() {}
         }
+        client.on('data', (msg, rinfo) => this._handleResponse(msg, rinfo));
 
+        client.on('listening', () => {
+            const address = client.address();
+            console.log(`server listening ${address.address}:${address.port}`);
+        });
         /**
          * Device object
          * @typedef {object} Device
@@ -143,19 +153,18 @@ class Device {
     _requestDeviceStatus(device, that) {
         console.log("--in _requestDeviceStatus");
         let serializedRequest = new Buffer([0xAA, 0xAA, 0x12, 0xA0, 0x0A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1A]);
-        var client = new net.Socket();
 
-        client.on('data', (msg, rinfo) => this._handleResponse(msg, rinfo));
-        
-        client.on('listening', () => {
-            const address = client.address();
-            console.log(`server listening ${address.address}:${address.port}`);
-        });
-
-        client.connect(this.deviceStatusPort, device.address, function(data) {
-            console.log('Connected to tcp port');
+        if (!this.isConnected) {
+            client.connect(this.deviceStatusPort, device.address, function(data) {
+                console.log('Connected to tcp port');
+                this.isConnected = true;
+                client.write(serializedRequest);
+            });
+        } else {
+            console.log("-- already connected");
             client.write(serializedRequest);
-        });
+        }
+
         // socket.send(serializedRequest, 0, serializedRequest.length, device.port, device.ip);
     }
 
@@ -178,6 +187,7 @@ class Device {
         } else {
             console.log("_handleResponse -> else");
             let statusMessage = this._parseMessage(msg);
+            this.device.lastCmd = msg;
             this.device.props = statusMessage;
             this.options.onStatus(this.device);
         }
@@ -207,16 +217,17 @@ class Device {
      * @param {number} [port] Port number
      */
     _sendRequest(message, address = this.device.address, port = this.device.port) {
-        const encryptedMessage = encryptionService.encrypt(message, this.device.key);
-        const request = {
-            cid: 'app',
-            i: 0,
-            t: 'pack',
-            uid: 0,
-            pack: encryptedMessage
-        };
-        const serializedRequest = new Buffer(JSON.stringify(request));
-        socket.send(serializedRequest, 0, serializedRequest.length, port, address);
+        /*  const encryptedMessage = encryptionService.encrypt(message, this.device.key);
+          const request = {
+              cid: 'app',
+              i: 0,
+              t: 'pack',
+              uid: 0,
+              pack: encryptedMessage
+          };
+          const serializedRequest = new Buffer(JSON.stringify(request));
+          socket.send(serializedRequest, 0, serializedRequest.length, port, address);*/
+
     };
 
     /**
@@ -224,9 +235,18 @@ class Device {
      * @param {boolean} value State
      */
     setPower(value) {
-        this._sendCommand(
-            [cmd.power.code], [value ? 1 : 0]
-        );
+
+        console.log('--In setPower: ' + value);
+        /* if (!this.isConnected) {
+             client.connect(this.deviceStatusPort, this.device.address, function(data) {
+                 console.log('Connected to tcp port');
+                 this.isConnected = true;
+                 client.write(utils.cmd01(this.lastCmd, 1));
+             });
+         } else {*/
+
+        client.write(utils.cmd01(this.device.lastCmd, value));
+        // }
     };
 
     /**
@@ -457,7 +477,26 @@ class Device {
         };
     };
 
+    _cmd01(nowCmd, val) {
+        let cmdPos = 4 + 3;
+        let byte = nowCmd[cmdPos]
+        let bit = _intToBit(byte);
+        bit[4] = val
+        nowCmd[cmdPos] = _byteTohex(bit.join(''));
+        if (val) {
+            _cmd14(nowCmd, 0, true)
+        }
 
+        if (!val) {
+            _cmd16(nowCmd, 0, true)
+        }
+
+        let timeSt = _parseData789(nowCmd[4 + 7], nowCmd[4 + 8], nowCmd[4 + 9])
+
+        _cmd18(nowCmd, false, timeSt.bootTime, false, timeSt.shutTime, true)
+
+        return _cmd(nowCmd)
+    }
 
     _byteTohex(byte) {
         byte = parseInt(byte, 2);
