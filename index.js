@@ -30,7 +30,7 @@ const deviceOptions = {
     host: argv['hvac-host'],
     onStatus: (deviceModel) => {
         client.publish(mqttTopicPrefix + '/temperature_in/get', deviceModel.props[commands.temperature.code].toString());
-        client.publish(mqttTopicPrefix + '/temperature/get', deviceModel.props["wdNumber"].toString()); ////
+        client.publish(mqttTopicPrefix + '/temperature/get', deviceModel.props["wdNumber"].toString());
         client.publish(mqttTopicPrefix + '/fanspeed/get', commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString());
         //  client.publish(mqttTopicPrefix + '/swingvert/get', commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString());
         client.publish(mqttTopicPrefix + '/power/get', commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString());
@@ -40,14 +40,12 @@ const deviceOptions = {
          * Hass.io MQTT climate control doesn't support power commands through GUI,
          * so an additional pseudo mode is added
          */
-        client.publish(mqttTopicPrefix + '/mode/get',
-            (deviceModel.props[commands.power.code] === commands.power.value.on) ?
-            commands.mode.value.getKeyByValue(deviceModel.props[commands.mode.code]).toString() :
-            'none'
+        client.publish(mqttTopicPrefix + '/mode/get', (deviceModel.props[commands.power.code] === commands.power.value.on) ?
+            commands.mode.value.getKeyByValue(deviceModel.props[commands.mode.code]).toString() : 'none'
         );
     },
     onUpdate: (deviceModel) => {
-        console.log('[UDP] Status updated on %s', deviceModel.name)
+        console.log('[UDP] Status updated on %s', deviceModel.name);
     },
     onConnected: (deviceModel) => {
         console.log("--in option.onConnected");
@@ -66,7 +64,7 @@ let hvac;
  */
 const client = mqtt.connect(argv['mqtt-broker-url']);
 client.on('connect', () => {
-    console.log('[MQTT] Connected to broker on ' + argv['mqtt-broker-url'])
+    console.log('[MQTT] Connected to broker on ' + argv['mqtt-broker-url']);
     hvac = require('./app/deviceFactory').connect(deviceOptions);
 });
 
@@ -81,25 +79,24 @@ client.on('message', (topic, message) => {
         case mqttTopicPrefix + '/mode/set':
             if (message === 'none' || message == "off") {
                 // Power off when "none" mode
-                hvac.setPower(commands.power.value.off) //
+                hvac.setPower(commands.power.value.off); //
             } else {
                 // Power on and set mode if other than 'none'
                 if (hvac.device.props[commands.power.code] === commands.power.value.off) {
-                    hvac.setPower(commands.power.value.on) //
+                    hvac.setPower(commands.power.value.on); //
                 }
-                hvac.setMode(commands.mode.value[message])
+                hvac.setMode(commands.mode.value[message]);
             }
             return;
         case mqttTopicPrefix + '/fanspeed/set':
-            hvac.setFanSpeed(commands.fanSpeed.value[message])
+            hvac.setFanSpeed(commands.fanSpeed.value[message]);
             return;
         case mqttTopicPrefix + '/swingvert/set':
-            hvac.setSwingVert(commands.swingVert.value[message])
+            hvac.setSwingVert(commands.swingVert.value[message]);
             return;
         case mqttTopicPrefix + '/power/set':
-            console.log("in topic power set");
             hvac.setPower(commands.power.value[message]);
             return;
     }
-    console.log('[MQTT] No handler for topic %s', topic)
+    console.log('[MQTT] No handler for topic %s', topic);
 });
