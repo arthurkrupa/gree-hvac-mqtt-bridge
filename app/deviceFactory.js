@@ -5,7 +5,7 @@ const socket = dgram.createSocket('udp4');
 const encryptionService = require('./encryptionService')();
 const cmd = require('./commandEnums');
 const _ = require('lodash');
-var CryptoJS = require("crypto-js");
+
 const utils = require("./utils");
 
 const client = new net.Socket();
@@ -33,7 +33,7 @@ class Device {
             onStatus: options.onStatus || function() {},
             onUpdate: options.onUpdate || function() {},
             onConnected: options.onConnected || function() {}
-        }
+        };
         client.on('data', (msg, rinfo) => this._handleResponse(msg, rinfo));
 
         client.on('listening', () => {
@@ -118,7 +118,7 @@ class Device {
      * @param {Device} device Device object
      */
     _sendBindRequest(device) {
-        const message = {
+        /*const message = {
             mac: this.device.id,
             t: 'bind',
             uid: 0
@@ -132,7 +132,7 @@ class Device {
             pack: encryptedBoundMessage
         };
         const toSend = new Buffer(JSON.stringify(request));
-        socket.send(toSend, 0, toSend.length, device.port, device.address);
+        socket.send(toSend, 0, toSend.length, device.port, device.address);*/
     }
 
     /**
@@ -141,9 +141,9 @@ class Device {
      * @param {String} key - Encryption key
      */
     _confirmBinding(id, key) {
-        this.device.bound = true;
-        this.device.key = key;
-        console.log('[UDP] Device %s is bound!', this.device.name);
+        /*  this.device.bound = true;
+          this.device.key = key;
+          console.log('[UDP] Device %s is bound!', this.device.name);*/
     }
 
     /**
@@ -179,14 +179,14 @@ class Device {
 
         //default discovery msg
         if (msg && msg[2] == 12 && msg[3] === 0x03) {
-            const message = this._unpackCMD(rinfo.address, msg);
+            const message = utils.unpackCMD(rinfo.address, msg);
             this._setDevice(message.mac, message.name, rinfo.address, rinfo.port);
             this._requestDeviceStatus(this.device, this);
             this.options.onConnected(this.device);
             // this._sendBindRequest(this.device);
         } else {
-            console.log("_handleResponse -> else");
-            let statusMessage = this._parseMessage(msg);
+            console.log("received status msg.");
+            let statusMessage = utils.parseMessage(msg);
             console.log(statusMessage);
             this.device.lastCmd = msg;
             this.device.props = statusMessage;
@@ -200,12 +200,12 @@ class Device {
      * @param {number[]} values List of values
      */
     _sendCommand(commands = [], values = []) {
-        const message = {
-            opt: commands,
-            p: values,
-            t: 'cmd'
-        };
-        this._sendRequest(message);
+        /*   const message = {
+               opt: commands,
+               p: values,
+               t: 'cmd'
+           };
+           this._sendRequest(message);*/
     };
 
     /**
@@ -217,40 +217,16 @@ class Device {
      * @param {string} [address] IP/host address
      * @param {number} [port] Port number
      */
-    _sendRequest(message, address = this.device.address, port = this.device.port) {
-        /*  const encryptedMessage = encryptionService.encrypt(message, this.device.key);
-          const request = {
-              cid: 'app',
-              i: 0,
-              t: 'pack',
-              uid: 0,
-              pack: encryptedMessage
-          };
-          const serializedRequest = new Buffer(JSON.stringify(request));
-          socket.send(serializedRequest, 0, serializedRequest.length, port, address);*/
-
-    };
+    _sendRequest(message, address = this.device.address, port = this.device.port) {};
 
     /**
      * Turn on/off
      * @param {boolean} value State
      */
     setPower(value) {
-
         console.log('--In setPower: ' + value);
-        /* if (!this.isConnected) {
-             client.connect(this.deviceStatusPort, this.device.address, function(data) {
-                 console.log('Connected to tcp port');
-                 this.isConnected = true;
-                 client.write(utils.cmd01(this.lastCmd, 1));
-             });
-         } else {*/
         if (this.device.lastCmd)
             client.write(utils.cmd01(this.device.lastCmd, value));
-        //else {
-        //   this._requestDeviceStatus(this.device, this);
-        // }
-        // }
     };
 
     /**
@@ -260,9 +236,9 @@ class Device {
      */
     setTemp(value, unit = cmd.temperatureUnit.value.celsius) {
         console.log('--In setTemp: ' + value);
-        if (this.device.lastCmd) {
+        if (this.device.lastCmd)
             client.write(utils.cmd07(this.device.lastCmd, value, false));
-        }
+
     };
 
     /**
@@ -294,240 +270,7 @@ class Device {
             [cmd.swingVert.code], [value]
         );
     };
-
-    _getSecKey(mac) {
-        let magic = 'Y2016-10-24Y';
-        let magic_odd = '2Y10-6012-Y4';
-        let result = '';
-
-        if (mac && mac.length == 12) {
-            for (let i = 0; i < mac.length; i += 2) {
-                result += mac[i];
-            }
-
-            result += magic_odd;
-
-            result = CryptoJS.MD5(result).toString().substr(8, 16);
-            console.log("getSecKey----mac:" + mac + "----key:" + result);
-
-            return result
-        }
-    };
-    _unpackCMD(ip, cmd, state) {
-        if (cmd && cmd[2] == 12 && cmd[3] === 0x03) {
-            let industry = cmd[4];
-            let vender = cmd[5];
-            let type = cmd[6];
-            let mac = this._num10THexStr([
-                cmd[7], cmd[8], cmd[9],
-                cmd[10], cmd[11], cmd[12]
-            ]);
-            let secret = this._getSecKey(mac);
-            let status = "1";
-            let name = mac;
-            type = this._num10THexStr([industry, vender, type]);
-
-            return {
-                "industry": industry,
-                "vender": vender,
-                "type": type,
-                "mac": mac,
-                "ip": ip,
-                "name": name,
-                "status": status,
-                "secret": secret
-            };
-        }
-
-    };
-
-    _cmd(cmdCom) {
-        cmdCom[3] = 0x01;
-        var code = 0x00;
-        for (var i = 0; i < cmdCom.length - 1; i++) {
-            code += cmdCom[i];
-        }
-        cmdCom[cmdCom.length - 1] = code & 0xFF;
-        return cmdCom;
-    };
-
-    _num10THex(num) {
-        let hex = num.toString(16);
-        return hex.length === 1 ? '' + hex : '' + hex;
-    };
-    _num10THexStr(nums) {
-        let str = '';
-        for (let index = 0; index < nums.length; index++) {
-            let hex = this._num10THex(nums[index]);
-            str = str + '' + (hex.length == 1 ? '0' + hex : hex);
-        }
-        return str;
-    };
-
-
-    _parseMessage(message) {
-        let data3 = this._parseData3(message[4 + 3]);
-        let data4 = this._parseData4(message[4 + 4]);
-        let data5 = this._parseData5(message[4 + 5]);
-        let data6 = this._parseData6(message[4 + 6]);
-        let data789 = this._parseData789(message[4 + 7], message[4 + 8], message[4 + 9]);
-        let data10 = this._parseData10(message[4 + 10]);
-        let data11And12 = this._parseData11And12(data4.temtyp, message[4 + 11], message[4 + 12])
-        let cpmode = data3.cpmode;
-        let mute = data4.mute;
-        let windMode = parseInt(data3.windLevel, 2);
-        if (cpmode) {
-            windMode = 8;
-        } else if (mute) {
-            windMode = 7;
-        }
-        let devSt = _.assign(data3, data4, data5, data6, data789, data10, data11And12, { windMode });
-        return devSt;
-    };
-
-    _parseData3(byte) {
-        var bit = this._intToBit(byte);
-
-        var runMode = bit[5] + "" + bit[6] + "" + bit[7];
-        let boot = bit[4]
-        var windLevel = bit[1] + "" + bit[2] + "" + bit[3];
-        let cpmode = bit[0]
-        return {
-            runMode,
-            boot,
-            windLevel,
-            cpmode,
-        };
-    };
-
-    _parseData4(byte) {
-        var bit = this._intToBit(byte);
-        var mute = bit[1]
-        let mode = bit[2]
-        var wenTwo = bit[3] + "" + bit[4] + "" + bit[5] + "" + bit[6] + "" + bit[7];
-
-        let wdNumber = 0
-        if (!!!mode) {
-            var wen = parseInt(wenTwo, 2);
-            wen = wen >= 16 ? wen - 16 : wen;
-            wdNumber = wen > 0 ? wen + 16 : 16;
-        } else {
-            wdNumber = array_2[wenTwo]
-        }
-
-        return {
-            mute,
-            temtyp: mode,
-            wdNumber,
-        };
-    };
-
-    _parseData5(byte) {
-        var bit = this._intToBit(byte);
-
-        var windLR = bit[0] + "" + bit[1] + "" + bit[2] + "" + bit[3];
-        var windTB = bit[4] + "" + bit[5] + "" + bit[6] + "" + bit[7];
-        return {
-            windLR,
-            windTB,
-        };
-    };
-
-    _parseData6(byte) {
-        var bit = this._intToBit(byte);
-        return {
-            lighting: bit[0],
-            healthy: bit[1],
-            timingMode: bit[2],
-            dryingmode: bit[3],
-            wdNumberMode: bit[4] + '' + bit[5],
-            sleep: bit[6],
-            eco: bit[7],
-        };
-    };
-
-    _parseData789(byte7, byte8, byte9) {
-        let bits7 = this._intToBit(byte7);
-        let bits8 = this._intToBit(byte8);
-        let bits9 = this._intToBit(byte9);
-        let shut = bits7[0]
-        let shutT = '' + bits7[1] + '' + bits7[2] + bits7[3] + (_.join(bits9, ''))
-        let boot = bits7[4]
-        let bootT = '' + bits7[5] + bits7[6] + bits7[7] + (_.join(bits8, ''))
-        let bootSec = parseInt(bootT, 2)
-        let shutSec = parseInt(shutT, 2)
-        let bootHor = parseInt(bootSec / 60)
-        let bootSecnd = parseInt(bootSec % 60)
-        let shutHor = parseInt(shutSec / 60)
-        let shutSecnd = parseInt(shutSec % 60)
-        let bootTime = (bootHor >= 10 ? bootHor : '0' + bootHor) + ":" + (bootSecnd >= 10 ? bootSecnd : '0' + bootSecnd)
-        let shutTime = (shutHor >= 10 ? shutHor : '0' + shutHor) + ":" + (shutSecnd >= 10 ? shutSecnd : '0' + shutSecnd)
-        return {
-            bootEnabled: boot,
-            bootTime,
-            shutEnabled: shut,
-            shutTime
-        };
-    };
-
-    _parseData10(byte10) {
-        return {
-            wujiNum: byte10
-        };
-    };
-
-    _parseData11And12(type = 0, byte11, byte12) {
-        return {
-            indoorTemperature: type ? ((byte11 * 1.8) + 32) : byte11 + '.' + byte12
-        };
-    };
-
-    _cmd01(nowCmd, val) {
-        let cmdPos = 4 + 3;
-        let byte = nowCmd[cmdPos]
-        let bit = _intToBit(byte);
-        bit[4] = val
-        nowCmd[cmdPos] = _byteTohex(bit.join(''));
-        if (val) {
-            _cmd14(nowCmd, 0, true)
-        }
-
-        if (!val) {
-            _cmd16(nowCmd, 0, true)
-        }
-
-        let timeSt = _parseData789(nowCmd[4 + 7], nowCmd[4 + 8], nowCmd[4 + 9])
-
-        _cmd18(nowCmd, false, timeSt.bootTime, false, timeSt.shutTime, true)
-
-        return _cmd(nowCmd)
-    }
-
-    _byteTohex(byte) {
-        byte = parseInt(byte, 2);
-        return parseInt(byte.toString(16), 16);
-    }
-
-    _intToBit(x) {
-        var str = x.toString(2);
-        var c = 8 - str.length;
-        for (var i = 0; i < c; i++) {
-            str = "0" + str;
-        }
-        var bit = str.split("");
-        for (var i = 0; i < bit.length; i++) {
-            bit[i] = parseInt(bit[i]);
-        }
-        return bit;
-    }
-
-
 };
-
-
-
-
-
 
 module.exports.connect = function(options) {
     return new Device(options);
