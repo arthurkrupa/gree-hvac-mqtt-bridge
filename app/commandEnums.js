@@ -38,6 +38,7 @@ module.exports = {
         value: {
             auto: 0, //auto
             low: 1, //1
+            low2: 3,
             mediumLow: 7, //quite //1 // not available on 3-speed units
             medium: 6, //step less
             high: 8 //turbo
