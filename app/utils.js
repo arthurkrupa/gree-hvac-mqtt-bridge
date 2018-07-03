@@ -1,5 +1,6 @@
 'use strict';
 const _ = require('lodash');
+const CryptoJS = require("crypto-js");
 module.exports = {
 
     _: require('lodash'),
@@ -7,6 +8,51 @@ module.exports = {
     byteTohex: function(byte) {
         byte = parseInt(byte, 2);
         return parseInt(byte.toString(16), 16);
+    },
+    _getSecKey: function(mac) {
+        let magic = 'Y2016-10-24Y';
+        let magic_odd = '2Y10-6012-Y4';
+        let result = '';
+
+        if (mac && mac.length == 12) {
+            for (let i = 0; i < mac.length; i += 2) {
+                result += mac[i];
+            }
+
+            result += magic_odd;
+
+            result = CryptoJS.MD5(result).toString().substr(8, 16);
+            console.log("getSecKey----mac:" + mac + "----key:" + result);
+
+            return result;
+        }
+    },
+
+    unpackCMD: function(ip, cmd, state) {
+        if (cmd && cmd[2] == 12 && cmd[3] === 0x03) {
+            let industry = cmd[4];
+            let vender = cmd[5];
+            let type = cmd[6];
+            let mac = this.num10THexStr([
+                cmd[7], cmd[8], cmd[9],
+                cmd[10], cmd[11], cmd[12]
+            ]);
+            let secret = this._getSecKey(mac);
+            let status = "1";
+            let name = mac;
+            type = this.num10THexStr([industry, vender, type]);
+
+            return {
+                "industry": industry,
+                "vender": vender,
+                "type": type,
+                "mac": mac,
+                "ip": ip,
+                "name": name,
+                "status": status,
+                "secret": secret
+            };
+        }
     },
 
     intToBit: function(x) {
@@ -40,7 +86,7 @@ module.exports = {
     num10THexStr: function(nums) {
         let str = ''
         for (let index = 0; index < nums.length; index++) {
-            let hex = num10THex(nums[index])
+            let hex = this.num10THex(nums[index])
             str = str + '' + (hex.length == 1 ? '0' + hex : hex);
         }
         return str;
@@ -121,7 +167,7 @@ module.exports = {
     },
 
     parseData3: function(byte) {
-        var bit = intToBit(byte);
+        var bit = this.intToBit(byte);
 
         var runMode = bit[5] + "" + bit[6] + "" + bit[7];
         let boot = bit[4]
@@ -137,17 +183,17 @@ module.exports = {
 
     parseData4: function(byte) {
         var bit = this.intToBit(byte);
-        var mute = bit[1]
-        let mode = bit[2]
+        var mute = bit[1];
+        let mode = bit[2];
         var wenTwo = bit[3] + "" + bit[4] + "" + bit[5] + "" + bit[6] + "" + bit[7];
 
-        let wdNumber = 0
+        let wdNumber = 0;
         if (!!!mode) {
             var wen = parseInt(wenTwo, 2);
             wen = wen >= 16 ? wen - 16 : wen;
             wdNumber = wen > 0 ? wen + 16 : 16;
         } else {
-            wdNumber = array_2[wenTwo]
+            wdNumber = array_2[wenTwo];
         }
 
         return {
@@ -185,65 +231,65 @@ module.exports = {
         let bits7 = this.intToBit(byte7);
         let bits8 = this.intToBit(byte8);
         let bits9 = this.intToBit(byte9);
-        let shut = bits7[0]
-        let shutT = '' + bits7[1] + '' + bits7[2] + bits7[3] + (_.join(bits9, ''))
-        let boot = bits7[4]
-        let bootT = '' + bits7[5] + bits7[6] + bits7[7] + (_.join(bits8, ''))
-        let bootSec = parseInt(bootT, 2)
-        let shutSec = parseInt(shutT, 2)
-        let bootHor = parseInt(bootSec / 60)
-        let bootSecnd = parseInt(bootSec % 60)
-        let shutHor = parseInt(shutSec / 60)
-        let shutSecnd = parseInt(shutSec % 60)
-        let bootTime = (bootHor >= 10 ? bootHor : '0' + bootHor) + ":" + (bootSecnd >= 10 ? bootSecnd : '0' + bootSecnd)
-        let shutTime = (shutHor >= 10 ? shutHor : '0' + shutHor) + ":" + (shutSecnd >= 10 ? shutSecnd : '0' + shutSecnd)
+        let shut = bits7[0];
+        let shutT = '' + bits7[1] + '' + bits7[2] + bits7[3] + (_.join(bits9, ''));
+        let boot = bits7[4];
+        let bootT = '' + bits7[5] + bits7[6] + bits7[7] + (_.join(bits8, ''));
+        let bootSec = parseInt(bootT, 2);
+        let shutSec = parseInt(shutT, 2);
+        let bootHor = parseInt(bootSec / 60);
+        let bootSecnd = parseInt(bootSec % 60);
+        let shutHor = parseInt(shutSec / 60);
+        let shutSecnd = parseInt(shutSec % 60);
+        let bootTime = (bootHor >= 10 ? bootHor : '0' + bootHor) + ":" + (bootSecnd >= 10 ? bootSecnd : '0' + bootSecnd);
+        let shutTime = (shutHor >= 10 ? shutHor : '0' + shutHor) + ":" + (shutSecnd >= 10 ? shutSecnd : '0' + shutSecnd);
         return {
             bootEnabled: boot,
             bootTime,
             shutEnabled: shut,
             shutTime
-        }
+        };
     },
 
     parseData10: function(byte10) {
         return {
             wujiNum: byte10
-        }
+        };
     },
 
     parseData11And12: function(type = 0, byte11, byte12) {
         return {
             indoorTemperature: type ? ((byte11 * 1.8) + 32) : byte11 + '.' + byte12
-        }
+        };
     },
 
     parseMessage: function(message) {
-        let data3 = this.parseData3(message[4 + 3])
-        let data4 = this.parseData4(message[4 + 4])
-        let data5 = this.parseData5(message[4 + 5])
-        let data6 = this.parseData6(message[4 + 6])
-        let data789 = this.parseData789(message[4 + 7], message[4 + 8], message[4 + 9])
-        let data10 = this.parseData10(message[4 + 10])
-        let data11And12 = this.parseData11And12(data4.temtyp, message[4 + 11], message[4 + 12])
-        let cpmode = data3.cpmode
-        let mute = data4.mute
-        let windMode = parseInt(data3.windLevel, 2)
+        let data3 = this.parseData3(message[4 + 3]);
+        let data4 = this.parseData4(message[4 + 4]);
+        let data5 = this.parseData5(message[4 + 5]);
+        let data6 = this.parseData6(message[4 + 6]);
+        let data789 = this.parseData789(message[4 + 7], message[4 + 8], message[4 + 9]);
+        let data10 = this.parseData10(message[4 + 10]);
+        let data11And12 = this.parseData11And12(data4.temtyp, message[4 + 11], message[4 + 12]);
+        let cpmode = data3.cpmode;
+        let mute = data4.mute;
+        let windMode = parseInt(data3.windLevel, 2);
         if (cpmode) {
-            windMode = 8
+            windMode = 8;
         } else if (mute) {
-            windMode = 7
+            windMode = 7;
         }
         let devSt = _.assign(data3, data4, data5, data6, data789, data10, data11And12, {
             windMode
         });
-        return devSt
+        return devSt;
     },
 
     cmd: function(cmdCom) {
-        cmdCom[3] = 0x01
+        cmdCom[3] = 0x01;
         var code = 0x00;
         for (var i = 0; i < cmdCom.length - 1; i++) {
-            code += cmdCom[i]
+            code += cmdCom[i];
         }
         cmdCom[cmdCom.length - 1] = code & 0xFF;
         return cmdCom;
@@ -251,50 +297,50 @@ module.exports = {
 
     cmd01: function(nowCmd, val) {
         let cmdPos = 4 + 3;
-        let byte = nowCmd[cmdPos]
+        let byte = nowCmd[cmdPos];
         let bit = this.intToBit(byte);
-        bit[4] = val
+        bit[4] = val;
         nowCmd[cmdPos] = this.byteTohex(bit.join(''));
         if (val) {
-            this.cmd14(nowCmd, 0, true)
+            this.cmd14(nowCmd, 0, true);
         }
 
         if (!val) {
-            this.cmd16(nowCmd, 0, true)
+            this.cmd16(nowCmd, 0, true);
         }
 
-        let timeSt = this.parseData789(nowCmd[4 + 7], nowCmd[4 + 8], nowCmd[4 + 9])
+        let timeSt = this.parseData789(nowCmd[4 + 7], nowCmd[4 + 8], nowCmd[4 + 9]);
 
-        this.cmd18(nowCmd, false, timeSt.bootTime, false, timeSt.shutTime, true)
+        this.cmd18(nowCmd, false, timeSt.bootTime, false, timeSt.shutTime, true);
 
-        return this.cmd(nowCmd)
+        return this.cmd(nowCmd);
     },
 
     cmd02: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 3;
-        let byte = nowCmd[cmdPos]
+        let byte = nowCmd[cmdPos];
         let bit = this.intToBit(byte);
-        bit[0] = val
+        bit[0] = val;
         nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         if (!modify) {
-            this.cmd06(nowCmd, 0, true)
-            this.cmd03(nowCmd, 0, true)
+            this.cmd06(nowCmd, 0, true);
+            this.cmd03(nowCmd, 0, true);
         }
 
-        return !modify ? this.cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd;
     },
 
     cmd03: function(nowCmd, val, modify = false) {
-        let _val = val
-        val = typeof val === 'number' ? _.padStart(val.toString(2), 3, '0') : val
+        let _val = val;
+        val = typeof val === 'number' ? _.padStart(val.toString(2), 3, '0') : val;
 
         let cmdPos = 4 + 3;
-        let byte = nowCmd[cmdPos]
+        let byte = nowCmd[cmdPos];
         let bit = this.intToBit(byte);
-        bit[1] = +val[0]
-        bit[2] = +val[1]
-        bit[3] = +val[2]
+        bit[1] = +val[0];
+        bit[2] = +val[1];
+        bit[3] = +val[2];
         nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         //if (_val == 6) {
@@ -302,90 +348,90 @@ module.exports = {
         //}
 
         if (!modify) {
-            this.cmd06(nowCmd, 0, true)
-            this.cmd02(nowCmd, 0, true)
+            this.cmd06(nowCmd, 0, true);
+            this.cmd02(nowCmd, 0, true);
         }
 
-        return !modify ? this.cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd;
     },
 
     cmd04: function(nowCmd, val, modify = false) {
-        val = _.padStart(val.toString(2), 8, '0')
+        val = _.padStart(val.toString(2), 8, '0');
 
         let cmdPos = 4 + 10;
         nowCmd[cmdPos] = byteTohex(val);
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd;
     },
 
     cmd05: function(nowCmd, val, wdNumber = 0, windLevel = -1, wujiNum = -1, windLR = -1, windTB = -1, modify = false) {
-        val = typeof val === 'number' ? _.padStart(val.toString(2), 3, '0') : val
+        val = typeof val === 'number' ? _.padStart(val.toString(2), 3, '0') : val;
 
         let cmdPos = 4 + 3;
-        let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
-        let oldMode = [bit[5], bit[6], bit[7]].join('')
+        let byte = nowCmd[cmdPos];
+        let bit = this.intToBit(byte);
+        let oldMode = [bit[5], bit[6], bit[7]].join('');
 
-        bit[5] = +val[0] //
-        bit[6] = +val[1] //
-        bit[7] = +val[2] //
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
-        let st = parseData4(nowCmd[4 + 4])
+        bit[5] = +val[0]; //
+        bit[6] = +val[1]; //
+        bit[7] = +val[2]; //
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
+        let st = this.parseData4(nowCmd[4 + 4]);
         if (wdNumber > 0) {
             if ((st.temtyp && wdNumber >= 61) || (!st.temtyp && wdNumber <= 31)) {
-                nowCmd = cmd07(nowCmd, wdNumber, true)
+                nowCmd = this.cmd07(nowCmd, wdNumber, true);
             }
         } else {
             if (val === '000') {
-                nowCmd = cmd07(nowCmd, !st.temtyp ? 25 : 77, true)
+                nowCmd = this.cmd07(nowCmd, !st.temtyp ? 25 : 77, true);
             } else if (val === '100') {
-                nowCmd = cmd07(nowCmd, !st.temtyp ? 28 : 82, true)
+                nowCmd = this.cmd07(nowCmd, !st.temtyp ? 28 : 82, true);
             } else {
-                nowCmd = cmd07(nowCmd, !st.temtyp ? 27 : 81, true)
+                nowCmd = this.cmd07(nowCmd, !st.temtyp ? 27 : 81, true);
             }
         }
 
         if (val === '100') {
             if (oldMode != '100')
-                nowCmd = cmd14(nowCmd, 1, true)
+                nowCmd = this.cmd14(nowCmd, 1, true);
         }
 
         if (val === '010') {
-            nowCmd = cmd03(nowCmd, 1, true)
-            nowCmd = cmd06(nowCmd, 0, true)
-            nowCmd = cmd02(nowCmd, 0, true)
+            nowCmd = this.cmd03(nowCmd, 1, true)
+            nowCmd = this.cmd06(nowCmd, 0, true)
+            nowCmd = this.cmd02(nowCmd, 0, true)
         } else if (windLevel > -1) {
             if (windLevel <= 6) {
-                nowCmd = cmd03(nowCmd, windLevel, true)
-                nowCmd = cmd06(nowCmd, 0, true)
-                nowCmd = cmd02(nowCmd, 0, true)
+                nowCmd = this.cmd03(nowCmd, windLevel, true)
+                nowCmd = this.cmd06(nowCmd, 0, true)
+                nowCmd = this.cmd02(nowCmd, 0, true)
 
                 if (windLevel == 6 && wujiNum > -1) {
-                    nowCmd = cmd04(nowCmd, wujiNum, true)
+                    nowCmd = this.cmd04(nowCmd, wujiNum, true)
                 }
             } else if (windLevel == 7) {
-                nowCmd = cmd03(nowCmd, 0, true)
-                nowCmd = cmd02(nowCmd, 0, true)
-                nowCmd = cmd06(nowCmd, 1, true)
+                nowCmd = this.cmd03(nowCmd, 0, true);
+                nowCmd = this.cmd02(nowCmd, 0, true);
+                nowCmd = this.cmd06(nowCmd, 1, true);
             } else if (windLevel == 8) {
-                nowCmd = cmd03(nowCmd, 0, true)
-                nowCmd = cmd02(nowCmd, 1, true)
-                nowCmd = cmd06(nowCmd, 0, true)
+                nowCmd = this.cmd03(nowCmd, 0, true);
+                nowCmd = this.cmd02(nowCmd, 1, true);
+                nowCmd = this.cmd06(nowCmd, 0, true);
             }
 
         }
 
         if (windLR > -1) {
-            nowCmd = cmd09(nowCmd, windLR, true)
+            nowCmd = this.cmd09(nowCmd, windLR, true);
         }
         if (windTB > -1) {
-            nowCmd = cmd10(nowCmd, windTB, true)
+            nowCmd = this.cmd10(nowCmd, windTB, true);
         }
 
-        nowCmd = cmd16(nowCmd, 0, true)
-        nowCmd = cmd17(nowCmd, 0, true)
+        nowCmd = this.cmd16(nowCmd, 0, true);
+        nowCmd = this.cmd17(nowCmd, 0, true);
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd;
     },
 
 
@@ -407,11 +453,11 @@ module.exports = {
     cmd08: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 4;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[2] = val //
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd
     },
 
 
@@ -513,10 +559,10 @@ module.exports = {
     cmd15: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 6;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[4] = +val[0] //
         bit[5] = +val[1] //
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         return !modify ? cmd(nowCmd) : nowCmd
     },
@@ -538,16 +584,16 @@ module.exports = {
     cmd17: function(nowCmd, val, modify = false) {
         let cmdPos = 4 + 6;
         let byte = nowCmd[cmdPos]
-        let bit = intToBit(byte);
+        let bit = this.intToBit(byte);
         bit[7] = val //
-        nowCmd[cmdPos] = byteTohex(bit.join(''));
+        nowCmd[cmdPos] = this.byteTohex(bit.join(''));
 
         if (val) {
-            cmd16(nowCmd, 0, true)
-            cmd03(nowCmd, 0, true)
+            this.cmd16(nowCmd, 0, true)
+            this.cmd03(nowCmd, 0, true)
         }
 
-        return !modify ? cmd(nowCmd) : nowCmd
+        return !modify ? this.cmd(nowCmd) : nowCmd
     },
 
     cmd18: function(nowCmd, bootEnabled, bootTime, shutEnabled, shutTime, modify = false) {
@@ -570,7 +616,7 @@ module.exports = {
 
     cmd19: function(endpoint) {
 
-        let arr = cmd20(endpoint)
+        let arr = this.cmd20(endpoint)
 
         let nowCmd = [0xAC, 0xAC, 0x00, 0xB4, ...arr, 0x00, 0x00]
         nowCmd[2] = nowCmd.length - 3
