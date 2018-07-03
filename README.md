@@ -63,9 +63,10 @@ climate:
     name: CooperHunter HVAC
 
     # Change MQTT_TOPIC_PREFIX to what you've set in addon options
-    current_temperature_topic: "MQTT_TOPIC_PREFIX/temperature/get"
-    temperature_command_topic: "MQTT_TOPIC_PREFIX/temperature/set"
-    temperature_state_topic: "MQTT_TOPIC_PREFIX/temperature/get"
+    current_temperature_topic: "home/greehvac/temperature_in/get"
+    temperature_command_topic: "home/greehvac/temperature/set"
+    temperature_state_topic: "home/greehvac/temperature/get"
+
     mode_state_topic: "MQTT_TOPIC_PREFIX/mode/get"
     mode_command_topic: "MQTT_TOPIC_PREFIX/mode/set"
     fan_mode_state_topic: "MQTT_TOPIC_PREFIX/fanspeed/get"
@@ -101,6 +102,7 @@ climate:
     fan_modes:
       - auto
       - low
+      - low2
       - mediumLow
       - medium
       - mediumHigh
