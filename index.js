@@ -28,7 +28,6 @@ const mqttTopicPrefix = argv['mqtt-topic-prefix'];
 const deviceOptions = {
   host: argv['hvac-host'],
   onStatus: (deviceModel) => {
-    console.debug(deviceModel);
     client.publish(mqttTopicPrefix + '/temperature/get', deviceModel.props[commands.temperature.code].toString());
     client.publish(mqttTopicPrefix + '/fanspeed/get', commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString());
     client.publish(mqttTopicPrefix + '/swingvert/get', commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString());
