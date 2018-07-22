@@ -49,7 +49,8 @@ module.exports = {
         code: 'Air',
         value: {
             off: 0,
-            on: 1
+            on: 1,
+            both: 2 // guessed
         }
     },
     // "Blow" or "X-Fan", this function keeps the fan running for a while after shutting down. Only usable in Dry and Cool mode
