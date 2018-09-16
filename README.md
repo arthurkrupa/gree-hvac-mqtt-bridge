@@ -88,7 +88,7 @@ climate:
       - auto
       - cool
       - dry
-      - fan
+      - wind
       - heat
     swing_modes:
       - default
@@ -106,9 +106,11 @@ climate:
     fan_modes:
       - auto
       - low
+      - low1
       - low2
-      - mediumLow
+      - low3
       - medium
+      - mediumLow
       - mediumHigh
       - high
 ```
