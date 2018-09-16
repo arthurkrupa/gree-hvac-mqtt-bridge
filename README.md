@@ -29,6 +29,9 @@ docker run --rm -v "$PWD/data":/data cooper_hunter-hvac-mqtt-bridge
 ## Original Docs 
 - [http://cooperandhunter.com/ua/nordic_evo_two_instruction.pdf]
 
+## How to Unpack
+[Unpack APK](How-to-Unpack-sources-from-apk)
+
 ## Requirements
 
 - NodeJS (>=8.9.3) with NPM
