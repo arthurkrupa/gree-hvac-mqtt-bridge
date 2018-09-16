@@ -123,6 +123,7 @@ climate:
 
 ## Changelog
 [1.0.2] - Fixed modes and WindModes
+
 [1.0.1] - Initial Cooper&Hunter support. (Read/Write temperature, read indooor temperature, read mode, on/off)
 
 
