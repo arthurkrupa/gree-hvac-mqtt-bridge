@@ -115,12 +115,6 @@ climate:
       - high
 ```
 
-### How to power on/off
-
-Hass.io doesn't supply an on/off switch. As a workaround, switch mode to "NONE" to power off or any other to power on.
-
-
-
 ## Configuring HVAC WiFi
 
 1. Make sure your HVAC is running in AP mode. You can reset the WiFi config by pressing WIFI on the AC remote for 5s.
