@@ -15,9 +15,9 @@ module.exports = {
         value: {
             auto: "000",
             cool: "001",
-            dry: "110",
-            fan: "011",
-            heat: "100"
+            dry: "010",
+            wind: "011",
+            heat: "100",
         }
     },
     // temperature unit (must be together with set temperature)
@@ -36,11 +36,14 @@ module.exports = {
     fanSpeed: {
         code: 'windMode', //WdSpd
         value: {
-            auto: 0, //auto
+            auto: 0, //fan auto
             low: 1, //1
+            low1: 2,
             low2: 3,
-            mediumLow: 7, //quite //1 // not available on 3-speed units
-            medium: 6, //step less
+            low3: 4,
+            medium: 5, //fan
+            mediumLow: 6, //step less
+            mediumHigh: 7, //quite //1 // not available on 3-speed units
             high: 8 //turbo
         }
     },
