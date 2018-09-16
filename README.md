@@ -30,7 +30,7 @@ docker run --rm -v "$PWD/data":/data cooper_hunter-hvac-mqtt-bridge
 - [http://cooperandhunter.com/ua/nordic_evo_two_instruction.pdf]
 
 ## How to Unpack
-[How to Unpack sources from apk](/How-to-Unpack-sources-from-apk)
+[How to Unpack sources from apk](../../wiki/How-to-Unpack-sources-from-apk)
 
 
 ## Requirements
