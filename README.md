@@ -30,7 +30,7 @@ docker run --rm -v "$PWD/data":/data cooper_hunter-hvac-mqtt-bridge
 - [http://cooperandhunter.com/ua/nordic_evo_two_instruction.pdf]
 
 ## How to Unpack
-[How to Unpack sources from apk](../../wiki/How-to-Unpack-sources-from-apk)
+- [How to Unpack sources from apk](../../wiki/How-to-Unpack-sources-from-apk)
 
 
 ## Requirements
@@ -67,9 +67,9 @@ climate:
     name: CooperHunter HVAC
 
     # Change MQTT_TOPIC_PREFIX to what you've set in addon options
-    current_temperature_topic: "home/greehvac/temperature_in/get"
-    temperature_command_topic: "home/greehvac/temperature/set"
-    temperature_state_topic: "home/greehvac/temperature/get"
+    current_temperature_topic: "home/chhvac/temperature_in/get"
+    temperature_command_topic: "home/chhvac/temperature/set"
+    temperature_state_topic: "home/chhvac/temperature/get"
 
     mode_state_topic: "MQTT_TOPIC_PREFIX/mode/get"
     mode_command_topic: "MQTT_TOPIC_PREFIX/mode/set"
@@ -128,7 +128,7 @@ Hass.io doesn't supply an on/off switch. As a workaround, switch mode to "NONE" 
 
 
 ## Changelog
-
+[1.0.2] - Fixed modes and WindModes
 [1.0.1] - Initial Cooper&Hunter support. (Read/Write temperature, read indooor temperature, read mode, on/off)
 
 
