@@ -108,6 +108,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 
 ## Changelog
 
+[1.0.5]
+
+- Add Hass.io API security role
+
 [1.0.4]
 
 - Bump NodeJS version to 8.11.2
