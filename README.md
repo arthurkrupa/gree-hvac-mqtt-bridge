@@ -22,9 +22,33 @@ node index.js \
     --mqtt-password=""
 ```
 
+## Supported commands
+
+MQTT topic scheme:
+
+- `MQTT_TOPIC_PREFIX/COMMAND/get` Get value
+- `MQTT_TOPIC_PREFIX/COMMAND/set` Set value
+
+Note: _boolean_ values are set using 0 or 1
+
+| Command | Values | Description |
+|-|-|-|
+| **temperature** | any integer |In degrees Celsius by default |
+| **mode** | _off_, _auto_, _cool_, _heat_, _dry_, _fan_only_|Operation mode |
+| **fanspeed** | _auto_, _low_, _mediumLow_, _medium_, _mediumHigh_, _high_ | Fan speed |
+| **swingvert** | _default_, _full_, _fixedTop_, _fixedMidTop_, _fixedMid_, _fixedMidBottom_, _fixedBottom_, _swingBottom_, _swingMidBottom_, _swingMid_, _swingMidTop_, _swingTop_ | Vetical swing |
+| **power** | _0_, _1_ | Turn device on/off |
+| **health** | _0_, _1_ | Health ("Cold plasma") mode, only for devices equipped with "anion generator", which absorbs dust and kills bacteria |
+| **powersave** | _0_, _1_ | Power Saving mode |
+| **lights** | _0_, _1_ | Turn on/off device lights |
+| **quiet** | _0_, _1_ | Quiet mode |
+| **blow** | _0_, _1_ | Keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode) |
+| **air** | _off_, _inside_, _outside_ | Fresh air valve |
+| **sleep** | _0_, _1_ | Sleep mode |
+
 ## Hass.io addon
 
-The service can be used as a 3rd party addon for the Hass.io [MQTT climate platform](https://home-assistant.io/components/climate.mqtt/).
+The service can be used as a 3rd party addon for the Hass.io [MQTT climate platform](https://home-assistant.io/components/climate.mqtt/), although not all commands are supported.
 
 1. [Install](https://home-assistant.io/hassio/installing_third_party_addons/) the addon
 2. Customize addon options (HVAC host, MQTT broker URL, MQTT topic prefix)
@@ -109,12 +133,15 @@ docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"wlan\"}" | nc -cu 192.168.1.1 7000
 ````
 
+Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
+
 ## Changelog
 
-[1.1.0] UNRELEASED
+[1.1.0]
 
 - Add support for MQTT authentication
 - BREAKING: Update MQTT mode state names to match Hass.io defaults
+- Add support for new modes: Air, Power Save, Lights, Health, Quiet, Sleep, Blow
 - Fix deprecated Buffer() use
 
 [1.0.5]
