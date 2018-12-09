@@ -51,38 +51,39 @@ climate:
     # Keep the following as is
     payload_off: 0
     payload_on: 1
+    mode_state_template: "{{ value_json }}"
     modes:
-      - none
-      - auto
-      - cool
-      - dry
-      - fan
-      - heat
+      - "off"
+      - "auto"
+      - "cool"
+      - "heat"
+      - "dry"
+      - "fan_only"
     swing_modes:
-      - default
-      - full
-      - fixedTop
-      - fixedMidTop
-      - fixedMid
-      - fixedMidBottom
-      - fixedBottom
-      - swingBottom
-      - swingMidBottom
-      - swingMid
-      - swingMidTop
-      - swingTop
+      - "default"
+      - "full"
+      - "fixedTop"
+      - "fixedMidTop"
+      - "fixedMid"
+      - "fixedMidBottom"
+      - "fixedBottom"
+      - "swingBottom"
+      - "swingMidBottom"
+      - "swingMid"
+      - "swingMidTop"
+      - "swingTop"
     fan_modes:
-      - auto
-      - low
-      - mediumLow
-      - medium
-      - mediumHigh
-      - high
+      - "auto"
+      - "low"
+      - "mediumLow"
+      - "medium"
+      - "mediumHigh"
+      - "high"
 ```
 
 ### How to power on/off
 
-Hass.io doesn't supply an on/off switch. As a workaround, switch mode to "NONE" to power off or any other to power on.
+Hass.io doesn't supply separate on/off switch. Use the dedicated mode for that.
 
 ### Running addon locally
 
@@ -107,6 +108,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 ````
 
 ## Changelog
+
+[1.1.0] UNRELEASED
+
+- BREAKING: Update MQTT mode state names to match Hass.io defaults
 
 [1.0.5]
 

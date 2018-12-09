@@ -16,7 +16,7 @@ module.exports = {
             auto: 0,
             cool: 1,
             dry: 2,
-            fan: 3, 
+            fan_only: 3,
             heat: 4
         }
     },

@@ -34,14 +34,14 @@ const deviceOptions = {
     client.publish(mqttTopicPrefix + '/power/get', commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString());
 
     /**
-     * Handle "none" mode status
+     * Handle "off" mode status
      * Hass.io MQTT climate control doesn't support power commands through GUI,
      * so an additional pseudo mode is added
      */ 
     client.publish(mqttTopicPrefix + '/mode/get',
       (deviceModel.props[commands.power.code] === commands.power.value.on)
         ? commands.mode.value.getKeyByValue(deviceModel.props[commands.mode.code]).toString()
-        : 'none'
+        : 'off'
     );
   },
   onUpdate: (deviceModel) => {
@@ -76,11 +76,11 @@ client.on('message', (topic, message) => {
       hvac.setTemp(parseInt(message));
       return;
     case mqttTopicPrefix + '/mode/set':
-      if (message === 'none') {
-        // Power off when "none" mode
+      if (message === 'off') {
+        // Power off when "off" mode
         hvac.setPower(commands.power.value.off)
       } else {
-        // Power on and set mode if other than 'none'
+        // Power on and set mode if other than 'off'
         if (hvac.device.props[commands.power.code] === commands.power.value.off) {
           hvac.setPower(commands.power.value.on)
         }
@@ -91,7 +91,7 @@ client.on('message', (topic, message) => {
       hvac.setFanSpeed(commands.fanSpeed.value[message])
       return;
     case mqttTopicPrefix + '/swingvert/set':
-    hvac.setSwingVert(commands.swingVert.value[message])
+      hvac.setSwingVert(commands.swingVert.value[message])
       return;
     case mqttTopicPrefix + '/power/set':
       hvac.setPower(parseInt(message));
