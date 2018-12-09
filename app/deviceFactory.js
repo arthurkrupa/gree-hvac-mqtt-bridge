@@ -307,16 +307,16 @@ class Device {
         )
     };
 
-    setXFan (value) {
+    setBlow (value) {
         this._sendCommand(
             [cmd.blow.code],
             [value ? 1 : 0]
         )
     };
 
-    setFreshAir (value) {
+    setAir (value) {
         this._sendCommand(
-            [cmd.airVale.code],
+            [cmd.air.code],
             [value ? 1 : 0]
         )
     };

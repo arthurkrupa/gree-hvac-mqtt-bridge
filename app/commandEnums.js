@@ -45,15 +45,15 @@ module.exports = {
         }
     },
     // fresh air valve
-    airVale: {
+    air: {
         code: 'Air',
         value: {
             off: 0,
             inside: 1,
-            outside: 2 // guessed
+            outside: 2
         }
     },
-    // "Blow" or "X-Fan", this function keeps the fan running for a while after shutting down. Only usable in Dry and Cool mode
+    // keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode)
     blow: {
         code: 'Blo',
         value: {

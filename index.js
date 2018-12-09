@@ -36,8 +36,8 @@ const deviceOptions = {
     client.publish(mqttTopicPrefix + '/powersave/get', commands.energySave.value.getKeyByValue(deviceModel.props[commands.energySave.code]).toString());
     client.publish(mqttTopicPrefix + '/lights/get', commands.lights.value.getKeyByValue(deviceModel.props[commands.lights.code]).toString());
     client.publish(mqttTopicPrefix + '/quiet/get', commands.quiet.value.getKeyByValue(deviceModel.props[commands.quiet.code]).toString());
-    client.publish(mqttTopicPrefix + '/xfan/get', commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString());
-    client.publish(mqttTopicPrefix + '/freshair/get', commands.airVale.value.getKeyByValue(deviceModel.props[commands.airVale.code]).toString());
+    client.publish(mqttTopicPrefix + '/blow/get', commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString());
+    client.publish(mqttTopicPrefix + '/air/get', commands.air.value.getKeyByValue(deviceModel.props[commands.air.code]).toString());
     client.publish(mqttTopicPrefix + '/sleep/get', commands.sleep.value.getKeyByValue(deviceModel.props[commands.sleep.code]).toString());
 
     /**
@@ -64,8 +64,8 @@ const deviceOptions = {
     client.subscribe(mqttTopicPrefix + '/powersave/set');
     client.subscribe(mqttTopicPrefix + '/lights/set');
     client.subscribe(mqttTopicPrefix + '/quiet/set');
-    client.subscribe(mqttTopicPrefix + '/xfan/set');
-    client.subscribe(mqttTopicPrefix + '/freshair/set');
+    client.subscribe(mqttTopicPrefix + '/blow/set');
+    client.subscribe(mqttTopicPrefix + '/air/set');
     client.subscribe(mqttTopicPrefix + '/sleep/set');
   }
 };
@@ -130,11 +130,11 @@ client.on('message', (topic, message) => {
     case mqttTopicPrefix + '/quiet/set':
       hvac.setQuietMode(parseInt(message));
       return;
-    case mqttTopicPrefix + '/xfan/set':
-      hvac.setXFan(parseInt(message));
+    case mqttTopicPrefix + '/blow/set':
+      hvac.setBlow(parseInt(message));
       return;
-    case mqttTopicPrefix + '/freshair/set':
-      hvac.setFreshAir(parseInt(message));
+    case mqttTopicPrefix + '/air/set':
+      hvac.setAir(parseInt(message));
       return;
     case mqttTopicPrefix + '/sleep/set':
       hvac.setSleepMode(parseInt(message));
