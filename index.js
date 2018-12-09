@@ -32,6 +32,13 @@ const deviceOptions = {
     client.publish(mqttTopicPrefix + '/fanspeed/get', commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString());
     client.publish(mqttTopicPrefix + '/swingvert/get', commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString());
     client.publish(mqttTopicPrefix + '/power/get', commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString());
+    client.publish(mqttTopicPrefix + '/health/get', commands.health.value.getKeyByValue(deviceModel.props[commands.health.code]).toString());
+    client.publish(mqttTopicPrefix + '/powersave/get', commands.energySave.value.getKeyByValue(deviceModel.props[commands.energySave.code]).toString());
+    client.publish(mqttTopicPrefix + '/lights/get', commands.lights.value.getKeyByValue(deviceModel.props[commands.lights.code]).toString());
+    client.publish(mqttTopicPrefix + '/quiet/get', commands.quiet.value.getKeyByValue(deviceModel.props[commands.quiet.code]).toString());
+    client.publish(mqttTopicPrefix + '/xfan/get', commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString());
+    client.publish(mqttTopicPrefix + '/freshair/get', commands.airVale.value.getKeyByValue(deviceModel.props[commands.airVale.code]).toString());
+    client.publish(mqttTopicPrefix + '/sleep/get', commands.sleep.value.getKeyByValue(deviceModel.props[commands.sleep.code]).toString());
 
     /**
      * Handle "off" mode status
@@ -53,6 +60,13 @@ const deviceOptions = {
     client.subscribe(mqttTopicPrefix + '/fanspeed/set');
     client.subscribe(mqttTopicPrefix + '/swingvert/set');
     client.subscribe(mqttTopicPrefix + '/power/set');
+    client.subscribe(mqttTopicPrefix + '/health/set');
+    client.subscribe(mqttTopicPrefix + '/powersave/set');
+    client.subscribe(mqttTopicPrefix + '/lights/set');
+    client.subscribe(mqttTopicPrefix + '/quiet/set');
+    client.subscribe(mqttTopicPrefix + '/xfan/set');
+    client.subscribe(mqttTopicPrefix + '/freshair/set');
+    client.subscribe(mqttTopicPrefix + '/sleep/set');
   }
 };
 
@@ -103,6 +117,27 @@ client.on('message', (topic, message) => {
       return;
     case mqttTopicPrefix + '/power/set':
       hvac.setPower(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/health/set':
+      hvac.setHealthMode(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/powersave/set':
+      hvac.setPowerSave(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/lights/set':
+      hvac.setLights(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/quiet/set':
+      hvac.setQuietMode(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/xfan/set':
+      hvac.setXFan(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/freshair/set':
+      hvac.setFreshAir(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/sleep/set':
+      hvac.setSleepMode(parseInt(message));
       return;
   }
   console.log('[MQTT] No handler for topic %s', topic)

@@ -148,7 +148,7 @@ class Device {
 
         // Extract encrypted package from message using device key (if available)
         const pack = encryptionService.decrypt(message, (this.device || {}).key);
-        
+
         // If package type is response to handshake
         if (pack.t === 'dev') {
             this._setDevice(message.cid, pack.name, rinfo.address, rinfo.port);
@@ -279,6 +279,54 @@ class Device {
         );
     };
     
+    setPowerSave (value) {
+        this._sendCommand(
+            [cmd.energySave.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    setLights (value) {
+        this._sendCommand(
+            [cmd.lights.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    setHealthMode (value) {
+        this._sendCommand(
+            [cmd.health.code],
+            [value ? 1 : 0]
+        );
+    }
+
+    setQuietMode (value) {
+        this._sendCommand(
+            [cmd.quiet.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    setXFan (value) {
+        this._sendCommand(
+            [cmd.blow.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    setFreshAir (value) {
+        this._sendCommand(
+            [cmd.airVale.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    setSleepMode (value) {
+        this._sendCommand(
+            [cmd.sleep.code],
+            [value ? 1 : 0]
+        )
+    };
 };
 
 module.exports.connect = function(options) {
