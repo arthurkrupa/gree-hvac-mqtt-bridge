@@ -11,14 +11,18 @@
         "hvac_host": "192.168.1.255",
         "mqtt": {
             "broker_url": "mqtt://localhost",
-            "topic_prefix": "home/greehvac"
+            "topic_prefix": "home/greehvac",
+            "username": "",
+            "password": ""
         }
     },
     "schema": {
         "hvac_host": "str",
         "mqtt": {
             "broker_url": "str",
-            "topic_prefix": "str"
+            "topic_prefix": "str",
+            "username": "str?",
+            "password": "str?"
         }
     }
 }

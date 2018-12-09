@@ -17,7 +17,9 @@ npm install
 node index.js \
     --hvac-host="192.168.1.255" \
     --mqtt-broker-url="mqtt://localhost" \
-    --mqtt-topic-prefix="home/greehvac"
+    --mqtt-topic-prefix="home/greehvac" \
+    --mqtt-username="" \
+    --mqtt-password=""
 ```
 
 ## Hass.io addon
@@ -111,6 +113,7 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 
 [1.1.0] UNRELEASED
 
+- Add support for MQTT authentication
 - BREAKING: Update MQTT mode state names to match Hass.io defaults
 
 [1.0.5]

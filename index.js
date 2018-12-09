@@ -4,7 +4,7 @@
 const mqtt = require('mqtt');
 const commands = require('./app/commandEnums');
 const argv = require('minimist')(process.argv.slice(2), {
-  string: [ 'hvac-host', 'mqtt-broker-url', 'mqtt-topic-prefix' ],
+  string: [ 'hvac-host', 'mqtt-broker-url', 'mqtt-topic-prefix', 'mqtt-username', 'mqtt-password'],
   '--': true,
 });
 
@@ -61,9 +61,17 @@ let hvac;
 /**
  * Connect to MQTT broker
  */
-const client  = mqtt.connect(argv['mqtt-broker-url']);
+
+const mqttOptions = {};
+let authLog = '';
+if (argv['mqtt-username'] && argv['mqtt-password']) {
+  mqttOptions.username = argv['mqtt-username'];
+  mqttOptions.password = argv['mqtt-password'];
+  authLog = ' as "' + mqttOptions.username + '"';
+}
+const client  = mqtt.connect(argv['mqtt-broker-url'], mqttOptions);
 client.on('connect', () => {
-  console.log('[MQTT] Connected to broker on ' + argv['mqtt-broker-url'])
+  console.log('[MQTT] Connected to broker on ' + argv['mqtt-broker-url'] + authLog)
   hvac = require('./app/deviceFactory').connect(deviceOptions);
 });
 
