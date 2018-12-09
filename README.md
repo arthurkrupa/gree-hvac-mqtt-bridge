@@ -115,6 +115,7 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 
 - Add support for MQTT authentication
 - BREAKING: Update MQTT mode state names to match Hass.io defaults
+- Fix deprecated Buffer() use
 
 [1.0.5]
 
