@@ -1,7 +1,6 @@
 'use strict';
 
 const dgram = require('dgram');
-const socket = dgram.createSocket('udp4');
 const encryptionService = require('./encryptionService')();
 const cmd = require('./commandEnums');
 
@@ -28,6 +27,9 @@ class Device {
             onConnected: options.onConnected || function() {}
         }
 
+        // Create new socket
+        this.socket = dgram.createSocket('udp4');
+
         /**
          * Device object
          * @typedef {object} Device
@@ -44,7 +46,7 @@ class Device {
         this._connectToDevice(this.options.host);
         
         // Handle incoming messages
-        socket.on('message', (msg, rinfo) => this._handleResponse(msg, rinfo));
+        this.socket.on('message', (msg, rinfo) => this._handleResponse(msg, rinfo));
     }
 
     /**
@@ -53,11 +55,11 @@ class Device {
      */
     _connectToDevice(address) {
         try {
-            socket.bind(() => {
+            this.socket.bind(() => {
                 const message = Buffer.from(JSON.stringify({t: 'scan'}));
 
-                socket.setBroadcast(true);
-                socket.send(message, 0, message.length, 7000, address);
+                this.socket.setBroadcast(true);
+                this.socket.send(message, 0, message.length, 7000, address);
 
                 console.log('[UDP] Connected to device at %s', address);
             });
@@ -108,7 +110,7 @@ class Device {
             pack: encryptedBoundMessage
         };
         const toSend = Buffer.from(JSON.stringify(request));
-        socket.send(toSend, 0, toSend.length, device.port, device.address);
+        this.socket.send(toSend, 0, toSend.length, device.port, device.address);
     }
 
     /**
@@ -220,7 +222,7 @@ class Device {
           pack: encryptedMessage
         };
         const serializedRequest = Buffer.from(JSON.stringify(request));
-        socket.send(serializedRequest, 0, serializedRequest.length, port, address);
+        this.socket.send(serializedRequest, 0, serializedRequest.length, port, address);
     };
     
     /**
