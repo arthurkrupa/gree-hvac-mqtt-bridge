@@ -77,7 +77,6 @@ climate:
     # Keep the following as is
     payload_off: 0
     payload_on: 1
-    mode_state_template: "{{ value_json }}"
     modes:
       - "off"
       - "auto"
