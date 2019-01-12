@@ -279,6 +279,10 @@ class Device {
         );
     };
     
+    /**
+     * Set power save mode
+     * @param {boolean} value on/off
+     */
     setPowerSave (value) {
         this._sendCommand(
             [cmd.energySave.code],
@@ -286,6 +290,10 @@ class Device {
         )
     };
 
+    /**
+     * Set lights on/off
+     * @param {boolean} value on/off
+     */
     setLights (value) {
         this._sendCommand(
             [cmd.lights.code],
@@ -293,6 +301,10 @@ class Device {
         )
     };
 
+    /**
+     * Set health mode
+     * @param {boolean} value on/off
+     */
     setHealthMode (value) {
         this._sendCommand(
             [cmd.health.code],
@@ -300,6 +312,10 @@ class Device {
         );
     }
 
+    /**
+     * Set quiet mode
+     * @param {boolean} value on/off
+     */
     setQuietMode (value) {
         this._sendCommand(
             [cmd.quiet.code],
@@ -307,6 +323,10 @@ class Device {
         )
     };
 
+    /**
+     * Set blow mode
+     * @param {boolean} value on/off
+     */
     setBlow (value) {
         this._sendCommand(
             [cmd.blow.code],
@@ -314,6 +334,10 @@ class Device {
         )
     };
 
+    /**
+     * Set air valve mode
+     * @param {boolean} value on/off
+     */
     setAir (value) {
         this._sendCommand(
             [cmd.air.code],
@@ -321,9 +345,24 @@ class Device {
         )
     };
 
+    /**
+     * Set sleep mode
+     * @param {boolean} value on/off
+     */
     setSleepMode (value) {
         this._sendCommand(
             [cmd.sleep.code],
+            [value ? 1 : 0]
+        )
+    };
+
+    /**
+     * Set turbo mode
+     * @param {boolean} value on/off
+     */
+    setTurbo (value) {
+        this._sendCommand(
+            [cmd.turbo.code],
             [value ? 1 : 0]
         )
     };

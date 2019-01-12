@@ -39,6 +39,7 @@ const deviceOptions = {
     client.publish(mqttTopicPrefix + '/blow/get', commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString());
     client.publish(mqttTopicPrefix + '/air/get', commands.air.value.getKeyByValue(deviceModel.props[commands.air.code]).toString());
     client.publish(mqttTopicPrefix + '/sleep/get', commands.sleep.value.getKeyByValue(deviceModel.props[commands.sleep.code]).toString());
+    client.publish(mqttTopicPrefix + '/turbo/get', commands.turbo.value.getKeyByValue(deviceModel.props[commands.turbo.code]).toString());
 
     /**
      * Handle "off" mode status
@@ -67,6 +68,7 @@ const deviceOptions = {
     client.subscribe(mqttTopicPrefix + '/blow/set');
     client.subscribe(mqttTopicPrefix + '/air/set');
     client.subscribe(mqttTopicPrefix + '/sleep/set');
+    client.subscribe(mqttTopicPrefix + '/turbo/set');
   }
 };
 
@@ -138,6 +140,9 @@ client.on('message', (topic, message) => {
       return;
     case mqttTopicPrefix + '/sleep/set':
       hvac.setSleepMode(parseInt(message));
+      return;
+    case mqttTopicPrefix + '/turbo/set':
+      hvac.setTurbo(parseInt(message));
       return;
   }
   console.log('[MQTT] No handler for topic %s', topic)

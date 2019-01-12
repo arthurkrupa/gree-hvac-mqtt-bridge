@@ -45,6 +45,7 @@ Note: _boolean_ values are set using 0 or 1
 | **blow** | _0_, _1_ | Keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode) |
 | **air** | _off_, _inside_, _outside_ | Fresh air valve |
 | **sleep** | _0_, _1_ | Sleep mode |
+| **turbo** | _0_, _1_ | Turbo mode |
 
 ## Hass.io addon
 
@@ -135,6 +136,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+
+[1.1.1]
+
+- Add Turbo mode
 
 [1.1.0]
 
