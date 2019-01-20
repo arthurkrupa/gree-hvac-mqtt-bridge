@@ -268,6 +268,17 @@ class Device {
         );
     };
     
+    /** 
+     * Set horizontal swing
+     * @param {number} value Horizontal swing value (0-7)
+     */
+    setSwingHor (value) {
+        this._sendCommand(
+            [cmd.swingHor.code],
+            [value]
+        );
+    };
+    
     /**
      * Set vertical swing
      * @param {number} value Vertical swing value (0-11)
@@ -319,7 +330,7 @@ class Device {
     setQuietMode (value) {
         this._sendCommand(
             [cmd.quiet.code],
-            [value ? 1 : 0]
+            [value]
         )
     };
 
@@ -341,7 +352,7 @@ class Device {
     setAir (value) {
         this._sendCommand(
             [cmd.air.code],
-            [value ? 1 : 0]
+            [value]
         )
     };
 
