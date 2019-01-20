@@ -137,6 +137,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+[1.1.2]
+
+- Discovered codes added for Air and Quiet to avoid errors
+- Added swingHor mode codes
 
 [1.1.1]
 
