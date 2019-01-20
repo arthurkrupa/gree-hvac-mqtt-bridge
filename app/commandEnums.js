@@ -50,7 +50,8 @@ module.exports = {
         value: {
             off: 0,
             inside: 1,
-            outside: 2
+            outside: 2,
+            mode3: 3
         }
     },
     // keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode)
@@ -89,8 +90,14 @@ module.exports = {
     swingHor: {
         code: 'SwingLfRig',
         value: {
-            default: 0
-            // TODO: remaining values
+            default: 0,
+            full: 1, // swing in full range
+            fixedLeft: 2, // fixed in leftmost position (1/5)
+            fixedMidLeft: 3, // fixed in middle-left postion (2/5)
+            fixedMid: 4, // fixed in middle position (3/5)
+            fixedMidRight: 5, // fixed in middle-right postion (4/5)
+            fixedRight: 6, // fixed in rightmost position (5/5)
+            full: 7 // swing in full range (seems to be same as full)
         }
     },
     // controls the swing mode of the vertical air blades
@@ -116,7 +123,9 @@ module.exports = {
         code: 'Quiet',
         value: {
             off: 0,
-            on: 1
+            mode1: 1,
+            mode2: 2,
+            mode3: 3
         }
     },
     // sets fan speed to the maximum. Fan speed cannot be changed while active and only available in Dry and Cool mode
