@@ -36,14 +36,15 @@ Note: _boolean_ values are set using 0 or 1
 | **temperature** | any integer |In degrees Celsius by default |
 | **mode** | _off_, _auto_, _cool_, _heat_, _dry_, _fan_only_|Operation mode |
 | **fanspeed** | _auto_, _low_, _mediumLow_, _medium_, _mediumHigh_, _high_ | Fan speed |
+| **swinghor** | _default_, _full_, _fixedLeft_, _fixedMidLeft_, _fixedMid_, _fixedMidRight_, _fixedRight_ | Horizontal Swing |
 | **swingvert** | _default_, _full_, _fixedTop_, _fixedMidTop_, _fixedMid_, _fixedMidBottom_, _fixedBottom_, _swingBottom_, _swingMidBottom_, _swingMid_, _swingMidTop_, _swingTop_ | Vetical swing |
 | **power** | _0_, _1_ | Turn device on/off |
 | **health** | _0_, _1_ | Health ("Cold plasma") mode, only for devices equipped with "anion generator", which absorbs dust and kills bacteria |
 | **powersave** | _0_, _1_ | Power Saving mode |
 | **lights** | _0_, _1_ | Turn on/off device lights |
-| **quiet** | _0_, _1_ | Quiet mode |
+| **quiet** | _0_, _1_, _2_, _3_ | Quiet modes |
 | **blow** | _0_, _1_ | Keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode) |
-| **air** | _off_, _inside_, _outside_ | Fresh air valve |
+| **air** | _off_, _inside_, _outside_, _mode3_ | Fresh air valve |
 | **sleep** | _0_, _1_ | Sleep mode |
 | **turbo** | _0_, _1_ | Turbo mode |
 
@@ -136,6 +137,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+[1.1.2]
+
+- Discovered codes added for Air and Quiet to avoid errors
+- Added swingHor mode codes
 
 [1.1.1]
 

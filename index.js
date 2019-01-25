@@ -30,6 +30,7 @@ const deviceOptions = {
   onStatus: (deviceModel) => {
     client.publish(mqttTopicPrefix + '/temperature/get', deviceModel.props[commands.temperature.code].toString());
     client.publish(mqttTopicPrefix + '/fanspeed/get', commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString());
+    client.publish(mqttTopicPrefix + '/swinghor/get', commands.swingHor.value.getKeyByValue(deviceModel.props[commands.swingHor.code]).toString());
     client.publish(mqttTopicPrefix + '/swingvert/get', commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString());
     client.publish(mqttTopicPrefix + '/power/get', commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString());
     client.publish(mqttTopicPrefix + '/health/get', commands.health.value.getKeyByValue(deviceModel.props[commands.health.code]).toString());
@@ -59,6 +60,7 @@ const deviceOptions = {
     client.subscribe(mqttTopicPrefix + '/temperature/set');
     client.subscribe(mqttTopicPrefix + '/mode/set');
     client.subscribe(mqttTopicPrefix + '/fanspeed/set');
+    client.subscribe(mqttTopicPrefix + '/swinghor/set');
     client.subscribe(mqttTopicPrefix + '/swingvert/set');
     client.subscribe(mqttTopicPrefix + '/power/set');
     client.subscribe(mqttTopicPrefix + '/health/set');
@@ -113,6 +115,9 @@ client.on('message', (topic, message) => {
       return;
     case mqttTopicPrefix + '/fanspeed/set':
       hvac.setFanSpeed(commands.fanSpeed.value[message])
+      return;
+    case mqttTopicPrefix + '/swinghor/set':
+      hvac.setSwingHor(commands.swingHor.value[message])
       return;
     case mqttTopicPrefix + '/swingvert/set':
       hvac.setSwingVert(commands.swingVert.value[message])
