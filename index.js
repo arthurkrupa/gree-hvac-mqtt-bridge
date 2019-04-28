@@ -25,33 +25,116 @@ Object.prototype.getKeyByValue = function( value ) {
  * Connect to device
  */
 const mqttTopicPrefix = argv['mqtt-topic-prefix'];
+
+var last_temperature = '';
+var last_fanspeed = '';
+var last_swinghor = '';
+var last_swingvert = '';
+var last_power = '';
+var last_health = '';
+var last_powersave = '';
+var last_lights = '';
+var last_quiet = '';
+var last_blow = '';
+var last_air = '';
+var last_sleep = '';
+var last_turbo = '';
+var last_mode = '';
+
 const deviceOptions = {
   host: argv['hvac-host'],
   onStatus: (deviceModel) => {
-    client.publish(mqttTopicPrefix + '/temperature/get', deviceModel.props[commands.temperature.code].toString());
-    client.publish(mqttTopicPrefix + '/fanspeed/get', commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString());
-    client.publish(mqttTopicPrefix + '/swinghor/get', commands.swingHor.value.getKeyByValue(deviceModel.props[commands.swingHor.code]).toString());
-    client.publish(mqttTopicPrefix + '/swingvert/get', commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString());
-    client.publish(mqttTopicPrefix + '/power/get', commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString());
-    client.publish(mqttTopicPrefix + '/health/get', commands.health.value.getKeyByValue(deviceModel.props[commands.health.code]).toString());
-    client.publish(mqttTopicPrefix + '/powersave/get', commands.energySave.value.getKeyByValue(deviceModel.props[commands.energySave.code]).toString());
-    client.publish(mqttTopicPrefix + '/lights/get', commands.lights.value.getKeyByValue(deviceModel.props[commands.lights.code]).toString());
-    client.publish(mqttTopicPrefix + '/quiet/get', commands.quiet.value.getKeyByValue(deviceModel.props[commands.quiet.code]).toString());
-    client.publish(mqttTopicPrefix + '/blow/get', commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString());
-    client.publish(mqttTopicPrefix + '/air/get', commands.air.value.getKeyByValue(deviceModel.props[commands.air.code]).toString());
-    client.publish(mqttTopicPrefix + '/sleep/get', commands.sleep.value.getKeyByValue(deviceModel.props[commands.sleep.code]).toString());
-    client.publish(mqttTopicPrefix + '/turbo/get', commands.turbo.value.getKeyByValue(deviceModel.props[commands.turbo.code]).toString());
+	  
+	var actual_temperature = deviceModel.props[commands.temperature.code].toString();
+	if(last_temperature != actual_temperature){
+	  client.publish(mqttTopicPrefix + '/temperature/get', actual_temperature);
+	  last_temperature = actual_temperature;
+	}
+	
+	var actual_fanspeed = commands.fanSpeed.value.getKeyByValue(deviceModel.props[commands.fanSpeed.code]).toString();
+	if(last_fanspeed != actual_fanspeed){
+      client.publish(mqttTopicPrefix + '/fanspeed/get', actual_fanspeed);
+	  last_fanspeed = actual_fanspeed;
+	}
+    
+	var actual_swinghor = commands.swingHor.value.getKeyByValue(deviceModel.props[commands.swingHor.code]).toString();
+	if(last_swinghor != actual_swinghor){
+      client.publish(mqttTopicPrefix + '/swinghor/get', actual_swinghor);
+	  last_swinghor = actual_swinghor;
+	}
+    
+	var actual_swingvert = commands.swingVert.value.getKeyByValue(deviceModel.props[commands.swingVert.code]).toString();
+	if(last_swingvert != actual_swingvert){
+      client.publish(mqttTopicPrefix + '/swingvert/get', actual_swingvert);
+	  last_swingvert = actual_swingvert;
+	}
+    
+	var actual_power = commands.power.value.getKeyByValue(deviceModel.props[commands.power.code]).toString();
+	if(last_power != actual_power){
+      client.publish(mqttTopicPrefix + '/power/get', actual_power);
+	  last_power = actual_power;
+	}
+    
+	var actual_health = commands.health.value.getKeyByValue(deviceModel.props[commands.health.code]).toString();
+	if(last_health != actual_health){
+      client.publish(mqttTopicPrefix + '/health/get', actual_health);
+	  last_health = actual_health;
+	}
+    
+	var actual_powersave = commands.energySave.value.getKeyByValue(deviceModel.props[commands.energySave.code]).toString();
+	if(last_powersave != actual_powersave){
+      client.publish(mqttTopicPrefix + '/powersave/get', actual_powersave);
+	  last_powersave = actual_powersave;
+	}
+    
+	var actual_lights = commands.lights.value.getKeyByValue(deviceModel.props[commands.lights.code]).toString();
+	if(last_lights != actual_lights){
+      client.publish(mqttTopicPrefix + '/lights/get', actual_lights);
+	  last_lights = actual_lights;
+	}
+    
+	var actual_quiet = commands.quiet.value.getKeyByValue(deviceModel.props[commands.quiet.code]).toString();
+	if(last_quiet != actual_quiet){
+      client.publish(mqttTopicPrefix + '/quiet/get', actual_quiet);
+	  last_quiet = actual_quiet;
+	}
+    
+	var actual_blow = commands.blow.value.getKeyByValue(deviceModel.props[commands.blow.code]).toString();
+	if(last_blow != actual_blow){
+      client.publish(mqttTopicPrefix + '/blow/get', actual_blow);
+	  last_blow = actual_blow;
+	}
+    
+	var actual_air = commands.air.value.getKeyByValue(deviceModel.props[commands.air.code]).toString();
+	if(last_air != actual_air){
+      client.publish(mqttTopicPrefix + '/air/get', actual_air);
+	  last_air = actual_air;
+	}
+    
+	var actual_sleep = commands.sleep.value.getKeyByValue(deviceModel.props[commands.sleep.code]).toString();
+	if(last_sleep != actual_sleep){
+      client.publish(mqttTopicPrefix + '/sleep/get', actual_sleep);
+	  last_sleep = actual_sleep;
+	}
+    
+	var actual_turbo = commands.turbo.value.getKeyByValue(deviceModel.props[commands.turbo.code]).toString();
+	if(last_turbo != actual_turbo){
+      client.publish(mqttTopicPrefix + '/turbo/get', actual_turbo);
+	  last_turbo = actual_turbo;
+	}
 
     /**
      * Handle "off" mode status
      * Hass.io MQTT climate control doesn't support power commands through GUI,
      * so an additional pseudo mode is added
      */ 
-    client.publish(mqttTopicPrefix + '/mode/get',
-      (deviceModel.props[commands.power.code] === commands.power.value.on)
+	 var actual_mode = (deviceModel.props[commands.power.code] === commands.power.value.on)
         ? commands.mode.value.getKeyByValue(deviceModel.props[commands.mode.code]).toString()
-        : 'off'
-    );
+        : 'off';
+    if(last_mode != actual_mode){
+      client.publish(mqttTopicPrefix + '/mode/get', actual_mode);
+	  last_mode = actual_mode;
+	}
   },
   onUpdate: (deviceModel) => {
     console.log('[UDP] Status updated on %s', deviceModel.name)
