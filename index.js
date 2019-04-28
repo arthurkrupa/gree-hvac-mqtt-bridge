@@ -111,9 +111,23 @@ if (argv['mqtt-username'] && argv['mqtt-password']) {
   mqttOptions.password = argv['mqtt-password']
   authLog = ' as "' + mqttOptions.username + '"'
 }
+console.log('[MQTT] Connecting to ' + argv['mqtt-broker-url'] + authLog + '...')
 const client = mqtt.connect(argv['mqtt-broker-url'], mqttOptions)
+
+client.on('reconnect', () => {
+  console.log('[MQTT] Reconnecting to ' + argv['mqtt-broker-url'] + authLog + '...')
+})
+
+client.stream.on('error', e => {
+  console.error('[MQTT] Error:', e)
+})
+
+client.on('close', () => {
+  console.log(`[MQTT] Disconnected`)
+})
+
 client.on('connect', () => {
-  console.log('[MQTT] Connected to broker on ' + argv['mqtt-broker-url'] + authLog)
+  console.log('[MQTT] Connected to broker')
   hvac = require('./app/deviceFactory').connect(deviceOptions)
 })
 
