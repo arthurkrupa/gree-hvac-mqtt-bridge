@@ -9,21 +9,31 @@
     "hassio_api": true,
     "hassio_role": "default",
     "options": {
-        "hvac_host": "192.168.1.255",
         "mqtt": {
             "broker_url": "mqtt://localhost",
-            "topic_prefix": "home/greehvac",
             "username": "",
             "password": ""
-        }
+        },
+        "devices": [
+            {
+                "hvac_host": "192.168.1.255",
+                "mqtt_topic_prefix": "home/greehvac"
+            }
+        ]
     },
     "schema": {
-        "hvac_host": "str",
+        "hvac_host": "str?",
         "mqtt": {
             "broker_url": "str",
-            "topic_prefix": "str",
+            "topic_prefix": "str?",
             "username": "str?",
             "password": "str?"
-        }
+        },
+        "devices": [
+            {
+                "hvac_host": "str",
+                "mqtt_topic_prefix": "str"
+            }
+        ]
     }
 }

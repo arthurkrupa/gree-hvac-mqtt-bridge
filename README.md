@@ -124,6 +124,38 @@ docker build \
 docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 ```
 
+### Multiple devices
+
+As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but are deprecated.
+
+Deprecated config example:
+
+```json
+"hvac_host": "192.168.0.255",
+"mqtt": {
+    "broker_url": "mqtt://localhost",
+    "topic_prefix": "/my/topic/prefix",
+}
+```
+
+Correct config example:
+
+```json
+"mqtt": {
+    "broker_url": "mqtt://localhost",
+},
+"devices": [
+  {
+    "hvac_host": "192.168.0.255",
+    "mqtt_topic_prefix": "/home/hvac01"
+  },
+  {
+    "hvac_host": "192.168.0.254",
+    "mqtt_topic_prefix": "/home/hvac02"
+  }
+]
+```
+
 ## Configuring HVAC WiFi
 
 1. Make sure your HVAC is running in AP mode. You can reset the WiFi config by pressing MODE +WIFI (or MODE + TURBO) on the AC remote for 5s.
@@ -137,6 +169,13 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+
+[1.2.0]
+
+- Add multiple device support
+- Update config with supported architectures
+- Fix state being published even if nothing changed
+
 [1.1.2]
 
 - Discovered codes added for Air and Quiet to avoid errors
