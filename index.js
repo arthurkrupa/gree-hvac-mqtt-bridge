@@ -58,7 +58,7 @@ const deviceOptions = {
     publishIfChanged('fanSpeed', getKeyByValue(commands.fanSpeed.value, deviceModel.props[commands.fanSpeed.code]).toString(), '/fanspeed/get')
     publishIfChanged('swingHor', getKeyByValue(commands.swingHor.value, deviceModel.props[commands.swingHor.code]).toString(), '/swinghor/get')
     publishIfChanged('swingVert', getKeyByValue(commands.swingVert.value, deviceModel.props[commands.swingVert.code]).toString(), '/swingvert/get')
-    publishIfChanged('swingVert', getKeyByValue(commands.power.value, deviceModel.props[commands.power.code]).toString(), '/power/get')
+    publishIfChanged('power', getKeyByValue(commands.power.value, deviceModel.props[commands.power.code]).toString(), '/power/get')
     publishIfChanged('health', getKeyByValue(commands.health.value, deviceModel.props[commands.health.code]).toString(), '/health/get')
     publishIfChanged('powerSave', getKeyByValue(commands.powerSave.value, deviceModel.props[commands.powerSave.code]).toString(), '/powersave/get')
     publishIfChanged('lights', getKeyByValue(commands.lights.value, deviceModel.props[commands.lights.code]).toString(), '/lights/get')
