@@ -170,6 +170,10 @@ Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If
 
 ## Changelog
 
+[1.2.2]
+
+- Fix incorrect state checks
+
 [1.2.0]
 
 - Add multiple device support
