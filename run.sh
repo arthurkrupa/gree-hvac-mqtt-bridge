@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-CONFIG_PATH=/data/options.json
+CONFIG_PATH=data/options.json
 
 HVAC_HOST=$(jq -r ".hvac_host" $CONFIG_PATH)
 MQTT_BROKER_URL=$(jq -r ".mqtt.broker_url" $CONFIG_PATH)
@@ -29,8 +29,11 @@ if [ "$INSTANCES" -gt 0 ]; then
 	done
 	npx pm2 logs /HVAC_/
 else
-	echo "Running in single-instance mode (DEPRECATED)"
-	node index.js \
+	HVAC_HOST=$(jq -r ".devices[0].hvac_host" $CONFIG_PATH);
+	MQTT_TOPIC_PREFIX=$(jq -r ".devices[0].mqtt_topic_prefix" $CONFIG_PATH);
+	echo "Running instance 0 for $HVAC_HOST"
+	#echo "${HVAC_HOST}, ${MQTT_BROKER_URL}, ${MQTT_TOPIC_PREFIX}, ${MQTT_USERNAME}, ${MQTT_PASSWORD}"
+	/usr/bin/node index.js \
 		--hvac-host="${HVAC_HOST}" \
 		--mqtt-broker-url="${MQTT_BROKER_URL}" \
 		--mqtt-topic-prefix="${MQTT_TOPIC_PREFIX}" \

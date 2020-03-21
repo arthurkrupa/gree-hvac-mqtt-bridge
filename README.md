@@ -126,19 +126,9 @@ docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 
 ### Multiple devices
 
-As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but are deprecated.
+As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but will run without PM2.
 
-Deprecated config example:
-
-```json
-"hvac_host": "192.168.0.255",
-"mqtt": {
-    "broker_url": "mqtt://localhost",
-    "topic_prefix": "/my/topic/prefix",
-}
-```
-
-Correct config example:
+config example:
 
 ```json
 "mqtt": {
@@ -169,6 +159,10 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+
+[1.2.3]
+
+- Fix run script for single device with same configuration
 
 [1.2.2]
 
