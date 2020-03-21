@@ -45,9 +45,15 @@ const deviceState = {
  * @param {string} mqttTopic Topic (without prefix) to send with new value
  */
 const publishIfChanged = function (stateProp, newValue, mqttTopic) {
+  const pubmqttOptions = {
+    retain: false
+  }
+  if (argv['mqtt-retain']) {
+    pubmqttOptions.retain = (argv['mqtt-retain'] == "true")
+  }
   if (newValue !== deviceState[stateProp]) {
     deviceState[stateProp] = newValue
-    client.publish(mqttTopicPrefix + mqttTopic, newValue)
+    client.publish(mqttTopicPrefix + mqttTopic, newValue, pubmqttOptions)
   }
 }
 

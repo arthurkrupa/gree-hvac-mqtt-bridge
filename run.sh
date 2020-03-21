@@ -8,7 +8,12 @@ MQTT_BROKER_URL=$(jq -r ".mqtt.broker_url" $CONFIG_PATH)
 MQTT_TOPIC_PREFIX=$(jq -r ".mqtt.topic_prefix" $CONFIG_PATH)
 MQTT_USERNAME=$(jq -r ".mqtt.username" $CONFIG_PATH)
 MQTT_PASSWORD=$(jq -r ".mqtt.password" $CONFIG_PATH)
+MQTT_RETAIN=$(jq -r ".mqtt.retain" $CONFIG_PATH)
+if [ "$MQTT_RETAIN" = null ]; then
+  MQTT_RETAIN=false
+fi
 
+echo "MQTT_RETAIN: ${MQTT_RETAIN}"
 npm install
 
 INSTANCES=$(jq '.devices | length' $CONFIG_PATH)
@@ -25,7 +30,8 @@ if [ "$INSTANCES" -gt 1 ]; then
 			--mqtt-broker-url="${MQTT_BROKER_URL}" \
 			--mqtt-topic-prefix="${MQTT_TOPIC_PREFIX}" \
 			--mqtt-username="${MQTT_USERNAME}" \
-			--mqtt-password="${MQTT_PASSWORD}"
+			--mqtt-password="${MQTT_PASSWORD}" \
+			--mqtt-retain="${MQTT_RETAIN}"
 	done
 	npx pm2 logs /HVAC_/
 else
@@ -38,5 +44,6 @@ else
 		--mqtt-broker-url="${MQTT_BROKER_URL}" \
 		--mqtt-topic-prefix="${MQTT_TOPIC_PREFIX}" \
 		--mqtt-username="${MQTT_USERNAME}" \
-		--mqtt-password="${MQTT_PASSWORD}"
+		--mqtt-password="${MQTT_PASSWORD}" \
+		--mqtt-retain="${MQTT_RETAIN}"
 fi
