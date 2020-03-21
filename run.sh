@@ -13,7 +13,7 @@ npm install
 
 INSTANCES=$(jq '.devices | length' $CONFIG_PATH)
 
-if [ "$INSTANCES" -gt 0 ]; then
+if [ "$INSTANCES" -gt 1 ]; then
 	for i in $(seq 0 $(($INSTANCES - 1))); do
 		HVAC_HOST=$(jq -r ".devices[$i].hvac_host" $CONFIG_PATH);
 		MQTT_TOPIC_PREFIX=$(jq -r ".devices[$i].mqtt_topic_prefix" $CONFIG_PATH);
@@ -31,7 +31,7 @@ if [ "$INSTANCES" -gt 0 ]; then
 else
 	HVAC_HOST=$(jq -r ".devices[0].hvac_host" $CONFIG_PATH);
 	MQTT_TOPIC_PREFIX=$(jq -r ".devices[0].mqtt_topic_prefix" $CONFIG_PATH);
-	echo "Running instance 0 for $HVAC_HOST"
+	echo "Running single instance for $HVAC_HOST"
 	#echo "${HVAC_HOST}, ${MQTT_BROKER_URL}, ${MQTT_TOPIC_PREFIX}, ${MQTT_USERNAME}, ${MQTT_PASSWORD}"
 	/usr/bin/node index.js \
 		--hvac-host="${HVAC_HOST}" \

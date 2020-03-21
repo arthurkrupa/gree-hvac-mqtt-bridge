@@ -124,6 +124,17 @@ docker build \
 docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 ```
 
+### Run single device as a service
+
+To run it when the PC starts, a systemd service has to be created by following the following commands.
+
+```shell
+sudo cp /opt/gree-hvac-mqtt-bridge/gree-bridge.service /etc/systemd/system/gree-bridge.service
+sudo chmod +x /etc/systemd/system/gree-bridge.service
+sudo systemctl enable gree-bridge
+sudo systemctl start gree-bridge
+```
+
 ### Multiple devices
 
 As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but will run without PM2.
@@ -163,6 +174,7 @@ Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If
 [1.2.3]
 
 - Fix run script for single device with same configuration
+- Run single device as a systemd service
 
 [1.2.2]
 
