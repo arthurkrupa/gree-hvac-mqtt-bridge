@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-CONFIG_PATH=data/options.json
+CONFIG_PATH=/data/options.json
 
 HVAC_HOST=$(jq -r ".hvac_host" $CONFIG_PATH)
 MQTT_BROKER_URL=$(jq -r ".mqtt.broker_url" $CONFIG_PATH)
