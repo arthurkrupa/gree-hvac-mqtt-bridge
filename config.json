@@ -3,6 +3,7 @@
     "version": "1.2.3",
     "slug": "gree_hvac_mqtt_bridge",
     "description": "Hass.io addon for controlling Gree air conditioners using the MQTT climate platform",
+    "url": "https://github.com/aaronsb/gree-hvac-mqtt-bridge",
     "arch": [ "aarch64", "amd64", "armhf", "armv7", "i386" ],
     "startup": "application",
     "boot": "auto",
