@@ -176,6 +176,13 @@ Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If
 
 ## Changelog
 
+[1.2.4]
+- Updated NPM dependency versions to more current (~2 years old!)
+- Defined fsevents as optional for linux based platforms
+- as of 4/26/2021 "found 0 vulnerabilities"
+- UDP Datagram warning is fixed with later versions
+
+
 [1.2.3]
 
 - Fix run script for single device with same configuration
