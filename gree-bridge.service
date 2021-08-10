@@ -1,0 +1,13 @@
+[Unit]
+Description=Gree HVAC MQTT Bridge
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/gree-hvac-mqtt-bridge
+ExecStart=/opt/gree-hvac-mqtt-bridge/run.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

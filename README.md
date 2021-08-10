@@ -4,7 +4,7 @@ Bridge service for communicating with Gree air conditioners using MQTT broadcast
 
 ## Requirements
 
-- NodeJS (>=8.11.0) with NPM
+- NodeJS (>=11.0.0) with NPM
 - An MQTT broker and Gree smart HVAC device on the same network
 - Docker (for building Hass.io addon)
 
@@ -124,36 +124,42 @@ docker build \
 docker run --rm -v "$PWD/data":/data gree-hvac-mqtt-bridge
 ```
 
-### Multiple devices
+### Run single device as a service
 
-As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but are deprecated.
+To run it when the PC starts, a systemd service has to be created by following the following commands.
 
-Deprecated config example:
-
-```json
-"hvac_host": "192.168.0.255",
-"mqtt": {
-    "broker_url": "mqtt://localhost",
-    "topic_prefix": "/my/topic/prefix",
-}
+```shell
+sudo cp /opt/gree-hvac-mqtt-bridge/gree-bridge.service /etc/systemd/system/gree-bridge.service
+sudo chmod +x /etc/systemd/system/gree-bridge.service
+sudo systemctl enable gree-bridge
+sudo systemctl start gree-bridge
 ```
 
-Correct config example:
+### Multiple devices
+
+As of 1.2.0 the Hassio addon supports multiple devices by running paralell NodeJS processes in PM2. Old configurations will work, but will run without PM2.
+
+config example:
 
 ```json
-"mqtt": {
-    "broker_url": "mqtt://localhost",
-},
-"devices": [
-  {
-    "hvac_host": "192.168.0.255",
-    "mqtt_topic_prefix": "/home/hvac01"
-  },
-  {
-    "hvac_host": "192.168.0.254",
-    "mqtt_topic_prefix": "/home/hvac02"
-  }
-]
+{
+    "mqtt": {
+        "broker_url": "mqtt://localhost",
+        "username": "user",
+        "password": "pass",
+	"retain": false
+    },
+    "devices": [
+      {
+        "hvac_host": "192.168.0.255",
+        "mqtt_topic_prefix": "/home/hvac01"
+      },
+      {
+        "hvac_host": "192.168.0.254",
+        "mqtt_topic_prefix": "/home/hvac02"
+      }
+    ]
+}
 ```
 
 ## Configuring HVAC WiFi
@@ -169,6 +175,19 @@ echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"
 Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
 
 ## Changelog
+
+[1.2.4]
+- Updated NPM dependency versions to more current (~2 years old!)
+- Defined fsevents as optional for linux based platforms
+- as of 4/26/2021 "found 0 vulnerabilities"
+- UDP Datagram warning is fixed with later versions
+
+
+[1.2.3]
+
+- Fix run script for single device with same configuration
+- Run single device as a systemd service
+- Add option to MQTT for retain flag
 
 [1.2.2]
 
@@ -229,3 +248,6 @@ This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) 
 
 - [tomikaa87](https://github.com/tomikaa87) for reverse-engineering the Gree protocol
 - [oroce](https://github.com/oroce) for inspiration
+- [arthurkrupa](https://https://github.com/arthurkrupa) for the actual service
+- [bkbilly](https://github.com/bkbilly) for service improvements to MQTT
+- [aaronsb](https://github.com/aaronsb) for sweeping the Node floor
