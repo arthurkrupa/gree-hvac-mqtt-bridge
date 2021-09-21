@@ -171,8 +171,9 @@ config example:
 ```shell
 echo -n "{\"psw\": \"YOUR_WIFI_PASSWORD\",\"ssid\": \"YOUR_WIFI_SSID\",\"t\": \"wlan\"}" | nc -cu 192.168.1.1 7000
 ````
+You should get `{"t":"ret","r":200}` if command was succesfull. Then wait a few minutes, AC will connect to WiFi.
 
-Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual.
+Note: This command may vary depending on your OS (e.g. Linux, macOS, CygWin). If facing problems, please consult the appropriate netcat manual. Do not use Termux (Android app), it won't work, you will get `timeout`.
 
 ## Changelog
 
