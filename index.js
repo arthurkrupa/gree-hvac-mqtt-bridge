@@ -35,7 +35,8 @@ const deviceState = {
   air: null,
   sleep: null,
   turbo: null,
-  mode: null
+  mode: null,
+  currentTemperature: null
 }
 
 /**
@@ -73,6 +74,7 @@ const deviceOptions = {
     publishIfChanged('air', getKeyByValue(commands.air.value, deviceModel.props[commands.air.code]).toString(), '/air/get')
     publishIfChanged('sleep', getKeyByValue(commands.sleep.value, deviceModel.props[commands.sleep.code]).toString(), '/sleep/get')
     publishIfChanged('turbo', getKeyByValue(commands.turbo.value, deviceModel.props[commands.turbo.code]).toString(), '/turbo/get')
+    publishIfChanged('currentTemperature', getKeyByValue(commands.currentTemperature.value, deviceModel.props[commands.currentTemperature.code]).toString(), '/curtemperature/get')
     /**
      * Handle "off" mode status
      * Hass.io MQTT climate control doesn't support power commands through GUI,
