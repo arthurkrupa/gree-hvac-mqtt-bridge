@@ -1,5 +1,13 @@
 'use strict'
 
+function generateOffsetValues (offset, min, max) {
+  var values = {};
+  for (let i = min; i <= max; i++) {
+    values[i.toString()] = i+offset;
+  }
+  return values;
+}
+
 module.exports = {
   // power state of the device
   power: {
@@ -31,6 +39,11 @@ module.exports = {
   // set temperature (must be together with temperature unit)
   temperature: {
     code: 'SetTem'
+  },
+  // temperature from the internal temperature probe (only some models)
+  currentTemperature: {
+    code: 'TemSen',
+    value: generateOffsetValues(40, -10, 50)
   },
   // fan speed
   fanSpeed: {
