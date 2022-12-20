@@ -30,6 +30,7 @@ class Device {
          * Device object
          * @typedef {object} Device
          * @property {string} id - ID
+         * @property {string} mac - Mac
          * @property {string} name - Name
          * @property {string} address - IP address
          * @property {number} port - Port number
@@ -72,12 +73,14 @@ class Device {
   /**
      * Register new device locally
      * @param {string} id - CID received in handshake message
+     * @param {string} mac - Device mac address received in handshake message
      * @param {string} name - Device name received in handshake message
      * @param {string} address - IP/host address
      * @param {number} port - Port number
      */
-  _setDevice (id, name, address, port) {
+  _setDevice (id, mac, name, address, port) {
     this.device.id = id
+    this.device.mac = mac
     this.device.name = name
     this.device.address = address
     this.device.port = port
@@ -93,7 +96,7 @@ class Device {
      */
   _sendBindRequest (device) {
     const message = {
-      mac: this.device.id,
+      mac: this.device.mac,
       t: 'bind',
       uid: 0
     }
@@ -127,7 +130,7 @@ class Device {
   _requestDeviceStatus (device) {
     const message = {
       cols: Object.keys(cmd).map(key => cmd[key].code),
-      mac: device.id,
+      mac: device.mac,
       t: 'status'
     }
     this._sendRequest(message, device.address, device.port)
@@ -148,7 +151,7 @@ class Device {
 
     // If package type is response to handshake
     if (pack.t === 'dev') {
-      this._setDevice(message.cid, pack.name, rinfo.address, rinfo.port)
+      this._setDevice(message.cid, pack.mac, pack.name, rinfo.address, rinfo.port)
       this._sendBindRequest(this.device)
       return
     }
