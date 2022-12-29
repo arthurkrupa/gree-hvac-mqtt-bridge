@@ -37,7 +37,7 @@ const onStatus = function(deviceModel, changed) {
      * Hass.io MQTT climate control doesn't support power commands through GUI,
      * so an additional pseudo mode is added
      */
-    if(name === 'mode' && deviceModel.props[commands.power.code] === commands.power.value.on)
+    if(name === 'mode' && deviceModel.props[commands.power.code] === commands.power.value.off)
       changed[name] = 'off'
     publish2mqtt(changed[name], deviceModel.mac+'/'+name.toLowerCase())
     if(!deviceModel.isSubDev)
