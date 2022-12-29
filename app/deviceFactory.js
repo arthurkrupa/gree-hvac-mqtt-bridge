@@ -285,6 +285,20 @@ class Device {
     this.callbacks.onSetup(this)
   }
 
+  _prepareCallback (changedProps) {
+    const res = {}
+    for(let key in changedProps){
+      let name = Object.keys(cmd).find(k => cmd[k].code === key)
+      let state
+      if(cmd[name].value)
+        state = Object.keys(cmd[name].value).find(k => cmd[name].value[k] === changedProps[key])
+      else
+        state = changedProps[key]
+      res[name] = state
+    }
+    return res
+  }
+
   /**
      * Handle dat message
      * @param {object} pack
@@ -292,10 +306,13 @@ class Device {
      * @param {number[]} [pack.dat]
      */
   _handleDat (pack) {
+    const changed = {}
     pack.cols.forEach((col, i) => {
+      if(this.props[col] !== pack.dat[i])
+        changed[col] = pack.dat[i]
       this.props[col] = pack.dat[i]
     })
-    this.callbacks.onStatus(this)
+    this.callbacks.onStatus(this, this._prepareCallback(changed))
     return
   }
 
@@ -306,10 +323,12 @@ class Device {
      * @param {number[]} [pack.val]
      */
   _handleRes (pack) {
+    const changed = {}
     pack.opt.forEach((opt, i) => {
+      changed[opt] = pack.val[i]
       this.props[opt] = pack.val[i]
     })
-    this.callbacks.onUpdate(this)
+    this.callbacks.onUpdate(this, this._prepareCallback(changed))
     return
   }
 
