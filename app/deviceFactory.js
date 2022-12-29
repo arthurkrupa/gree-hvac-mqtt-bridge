@@ -16,6 +16,7 @@ class Controller {
      * @param {boolean} [options.controllerOnly] Whether to just a controller, does not contain functions (usually VRF)
      * @callback [options.onStatus] Callback function run on each status update
      * @callback [options.onUpdate] Callback function run after command
+     * @callback [options.onSetup] Callback function run once device is setup
      * @callback [options.onConnected] Callback function run once connection is established
       */
   constructor (options) {
@@ -77,9 +78,8 @@ class Controller {
 
   /**
      * Register new controller locally
-     * @param {string} cid - CID received in handshake message
-     * @param {string} mac - Controller mac address received in handshake message
-     * @param {string} name - Controller name received in handshake message
+     * @param {object} message - Received handshake message
+     * @param {object} pack - Decrypted pack
      * @param {string} address - IP/host address
      * @param {number} port - Port number
      */
@@ -97,6 +97,12 @@ class Controller {
     console.log('[UDP] New Controller registered: %s', this.controller.name)
   }
 
+  /**
+     * Register new device locally
+     * @param {string} mac - Device mac address
+     * @param {string} name - Device name
+     * @param {boolean} isSubDev - If this device is a sub device
+     */
   _setDevice (mac, name, isSubDev = false) {
     const options = {
       mac,
@@ -120,7 +126,6 @@ class Controller {
 
   /**
      * Send binding request to controller
-     * @param {Controller} controller Controller object
      */
   _sendBindRequest () {
     const pack = {
@@ -133,7 +138,7 @@ class Controller {
 
   /**
      * Confirm controller is bound and update controller status on list
-     * @param {String} key - Encryption key
+     * @param {string} key - Encryption key
      */
   _confirmBinding (key) {
     this.controller.bound = true
@@ -141,6 +146,9 @@ class Controller {
     console.log('[UDP] Controller %s is bound!', this.controller.name)
   }
 
+  /**
+     * Request sub device list
+     */
   _requestSubDevices () {
     const pack = {
       mac: this.controller.mac,
@@ -151,7 +159,7 @@ class Controller {
   }
 
   /**
-     * Confirm device is bound and update device status on list
+     * Update device status on list
      * @param {Device} device - Device
      */
   _requestDeviceStatus (device) {
@@ -225,12 +233,8 @@ class Controller {
 
   /**
      * Send request to a bound device
-     * @param {object} message
-     * @param {string[]} message.opt
-     * @param {number[]} message.p
-     * @param {string} message.t
-     * @param {string} [address] IP/host address
-     * @param {number} [port] Port number
+     * @param {object} pack
+     * @param {number} i
      */
   _sendRequest (pack, i = 0) {
     const encryptedPack = encryptionService.encrypt(pack, this.controller.key)
@@ -254,12 +258,16 @@ class Controller {
  */
 class Device {
   /**
-     * Create device model and establish UDP connection with remote host
+     * Create device model
+     * @param {Controller} [parent] the controller object of this device
      * @param {object} [options] Options
-     * @param {string} [options.address] HVAC IP address
-     * @callback [options.onStatus] Callback function run on each status update
-     * @callback [options.onUpdate] Callback function run after command
-     * @callback [options.onConnected] Callback function run once connection is established
+     * @param {string} [options.mac] device mac address
+     * @param {string} [options.name] device name
+     * @param {boolean} [options.isSubDev] if this device is a sub device
+     * @param {object} [options.callbacks] Callback functions
+     * @param {function} [options.callbacks.onStatus] Callback function run on each status update
+     * @param {function} [options.callbacks.onUpdate] Callback function run after command
+     * @param {function} [options.callbacks.onSetup] Callback function run once device is setup
       */
   constructor (parent, options) {
 
@@ -277,6 +285,12 @@ class Device {
     this.callbacks.onSetup(this)
   }
 
+  /**
+     * Handle dat message
+     * @param {object} pack
+     * @param {string[]} [pack.cols]
+     * @param {number[]} [pack.dat]
+     */
   _handleDat (pack) {
     pack.cols.forEach((col, i) => {
       this.props[col] = pack.dat[i]
@@ -285,6 +299,12 @@ class Device {
     return
   }
 
+  /**
+     * Handle res message
+     * @param {object} pack
+     * @param {string[]} [pack.opt]
+     * @param {number[]} [pack.val]
+     */
   _handleRes (pack) {
     pack.opt.forEach((opt, i) => {
       this.props[opt] = pack.val[i]
