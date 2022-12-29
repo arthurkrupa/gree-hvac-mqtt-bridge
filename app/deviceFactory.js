@@ -149,10 +149,10 @@ class Controller {
   /**
      * Request sub device list
      */
-  _requestSubDevices () {
+  _requestSubDevices (i = 0) {
     const pack = {
       mac: this.controller.mac,
-      i: 0,
+      i: i,
       t: 'subDev'
     }
     this._sendRequest(pack)
@@ -207,6 +207,12 @@ class Controller {
     if (type === 'subList'){
       for(let device of pack.list)
         this._setDevice(device.mac, device.name, true)
+      let count = 0
+      for(let device of Object.values(this.controller.devices))
+        if(device.isSubDev)
+          count++
+      if(count<this.controller.subCnt)
+        this._requestSubDevices(pack.i + 1)
       return
     }
 
