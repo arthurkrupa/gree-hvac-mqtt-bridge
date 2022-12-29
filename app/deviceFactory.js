@@ -312,7 +312,8 @@ class Device {
         changed[col] = pack.dat[i]
       this.props[col] = pack.dat[i]
     })
-    this.callbacks.onStatus(this, this._prepareCallback(changed))
+    if(Object.keys(changed).length > 0)
+      this.callbacks.onStatus(this, this._prepareCallback(changed))
     return
   }
 
