@@ -9,98 +9,66 @@ const argv = require('minimist')(process.argv.slice(2), {
 })
 
 /**
- * Helper: get property key for value
- * @param {*} value
- */
-function getKeyByValue (object, value) {
-  return Object.keys(object).find(key => object[key] === value)
-}
-
-/**
  * Connect to device
  */
-const mqttTopicPrefix = argv['mqtt-topic-prefix']
+let __mqttTopicPrefix = argv['mqtt-topic-prefix']
+if(!__mqttTopicPrefix.endsWith('/'))
+  __mqttTopicPrefix += '/'
+const mqttTopicPrefix = __mqttTopicPrefix
 
-const deviceState = {
-  temperature: null,
-  fanSpeed: null,
-  swingHor: null,
-  swingVert: null,
-  power: null,
-  health: null,
-  powerSave: null,
-  lights: null,
-  quiet: null,
-  blow: null,
-  air: null,
-  sleep: null,
-  turbo: null,
-  mode: null
+const pubmqttOptions = {
+  retain: false
+}
+if (argv['mqtt-retain']) {
+  pubmqttOptions.retain = (argv['mqtt-retain'] == "true")
 }
 
-/**
- * Check if incoming device setting differs from last state and publish change if yes
- * @param {string} stateProp State property to be updated/compared with
- * @param {string} newValue New incoming device state value
- * @param {string} mqttTopic Topic (without prefix) to send with new value
- */
-const publishIfChanged = function (stateProp, newValue, mqttTopic) {
-  const pubmqttOptions = {
-    retain: false
-  }
-  if (argv['mqtt-retain']) {
-    pubmqttOptions.retain = (argv['mqtt-retain'] == "true")
-  }
-  if (newValue !== deviceState[stateProp]) {
-    deviceState[stateProp] = newValue
-    client.publish(mqttTopicPrefix + mqttTopic, newValue, pubmqttOptions)
-  }
+const publish2mqtt = function (newValue, mqttTopic) {
+  client.publish(mqttTopicPrefix + mqttTopic + '/get', newValue.toString(), pubmqttOptions)
 }
 
-const deviceOptions = {
-  host: argv['hvac-host'],
-  onStatus: (deviceModel) => {
-    publishIfChanged('temperature', deviceModel.props[commands.temperature.code].toString(), '/temperature/get')
-    publishIfChanged('fanSpeed', getKeyByValue(commands.fanSpeed.value, deviceModel.props[commands.fanSpeed.code]).toString(), '/fanspeed/get')
-    publishIfChanged('swingHor', getKeyByValue(commands.swingHor.value, deviceModel.props[commands.swingHor.code]).toString(), '/swinghor/get')
-    publishIfChanged('swingVert', getKeyByValue(commands.swingVert.value, deviceModel.props[commands.swingVert.code]).toString(), '/swingvert/get')
-    publishIfChanged('power', getKeyByValue(commands.power.value, deviceModel.props[commands.power.code]).toString(), '/power/get')
-    publishIfChanged('health', getKeyByValue(commands.health.value, deviceModel.props[commands.health.code]).toString(), '/health/get')
-    publishIfChanged('powerSave', getKeyByValue(commands.powerSave.value, deviceModel.props[commands.powerSave.code]).toString(), '/powersave/get')
-    publishIfChanged('lights', getKeyByValue(commands.lights.value, deviceModel.props[commands.lights.code]).toString(), '/lights/get')
-    publishIfChanged('quiet', getKeyByValue(commands.quiet.value, deviceModel.props[commands.quiet.code]).toString(), '/quiet/get')
-    publishIfChanged('blow', getKeyByValue(commands.blow.value, deviceModel.props[commands.blow.code]).toString(), '/blow/get')
-    publishIfChanged('air', getKeyByValue(commands.air.value, deviceModel.props[commands.air.code]).toString(), '/air/get')
-    publishIfChanged('sleep', getKeyByValue(commands.sleep.value, deviceModel.props[commands.sleep.code]).toString(), '/sleep/get')
-    publishIfChanged('turbo', getKeyByValue(commands.turbo.value, deviceModel.props[commands.turbo.code]).toString(), '/turbo/get')
+const skipCmdNames = ['temperatureUnit']
+const onStatus = function(deviceModel, changed) {
+  for(let name in changed){
+    if(skipCmdNames.includes(name))
+      continue
     /**
      * Handle "off" mode status
      * Hass.io MQTT climate control doesn't support power commands through GUI,
      * so an additional pseudo mode is added
      */
-    const extendedMode = (deviceModel.props[commands.power.code] === commands.power.value.on)
-      ? getKeyByValue(commands.mode.value, deviceModel.props[commands.mode.code]).toString()
-      : 'off'
-    publishIfChanged('mode', extendedMode, '/mode/get')
+    if(name === 'mode' && deviceModel.props[commands.power.code] === commands.power.value.on)
+      changed[name] = 'off'
+    publish2mqtt(changed[name], deviceModel.mac+'/'+name.toLowerCase())
+    if(!deviceModel.isSubDev)
+      publish2mqtt(changed[name], name.toLowerCase())
+  }
+}
+
+const onSetup = function(deviceModel){
+  for(let name of Object.keys(commands)){
+    if(skipCmdNames.includes(name))
+      continue
+    client.subscribe(mqttTopicPrefix + deviceModel.mac + '/' + name.toLowerCase() + '/set')
+    if(!deviceModel.isSubDev)
+      client.subscribe(mqttTopicPrefix + name.toLowerCase() + '/set')
+  }
+}
+
+const deviceOptions = {
+  host: argv['hvac-host'],
+  controllerOnly: argv['controllerOnly'] ? true : false,
+  onStatus: (deviceModel, changed) => {
+    onStatus(deviceModel, changed)
+    console.log('[UDP] Status changed on %s: %s', deviceModel.name, changed)
   },
-  onUpdate: (deviceModel) => {
-    console.log('[UDP] Status updated on %s', deviceModel.name)
+  onUpdate: (deviceModel, changed) => {
+    onStatus(deviceModel, changed)
+    console.log('[UDP] Status updated on %s: %s', deviceModel.name, changed)
   },
+  onSetup: onSetup,
   onConnected: (deviceModel) => {
-    client.subscribe(mqttTopicPrefix + '/temperature/set')
-    client.subscribe(mqttTopicPrefix + '/mode/set')
-    client.subscribe(mqttTopicPrefix + '/fanspeed/set')
-    client.subscribe(mqttTopicPrefix + '/swinghor/set')
-    client.subscribe(mqttTopicPrefix + '/swingvert/set')
-    client.subscribe(mqttTopicPrefix + '/power/set')
-    client.subscribe(mqttTopicPrefix + '/health/set')
-    client.subscribe(mqttTopicPrefix + '/powersave/set')
-    client.subscribe(mqttTopicPrefix + '/lights/set')
-    client.subscribe(mqttTopicPrefix + '/quiet/set')
-    client.subscribe(mqttTopicPrefix + '/blow/set')
-    client.subscribe(mqttTopicPrefix + '/air/set')
-    client.subscribe(mqttTopicPrefix + '/sleep/set')
-    client.subscribe(mqttTopicPrefix + '/turbo/set')
+
   }
 }
 
@@ -141,58 +109,62 @@ client.on('message', (topic, message) => {
   message = message.toString()
   console.log('[MQTT] Message "%s" received for %s', message, topic)
 
-  switch (topic) {
-    case mqttTopicPrefix + '/temperature/set':
-      hvac.setTemp(parseInt(message))
-      return
-    case mqttTopicPrefix + '/mode/set':
-      if (message === 'off') {
-        // Power off when "off" mode
-        hvac.setPower(commands.power.value.off)
-      } else {
-        // Power on and set mode if other than 'off'
-        if (hvac.device.props[commands.power.code] === commands.power.value.off) {
-          hvac.setPower(commands.power.value.on)
+  if(topic.startsWith(mqttTopicPrefix)){
+    let t = topic.substr(mqttTopicPrefix.length).split('/')
+    if(t.length === 2)
+      t.unshift(hvac.controller.mac)
+    let device = hvac.controller.devices[t[0]]
+    switch(t[1]){
+      case 'temperature':
+        device.setTemp(parseInt(message))
+        return
+      case 'mode':
+        if(message === 'off'){
+          device.setPower(commands.power.value.off)
         }
-        hvac.setMode(commands.mode.value[message])
-      }
-      return
-    case mqttTopicPrefix + '/fanspeed/set':
-      hvac.setFanSpeed(commands.fanSpeed.value[message])
-      return
-    case mqttTopicPrefix + '/swinghor/set':
-      hvac.setSwingHor(commands.swingHor.value[message])
-      return
-    case mqttTopicPrefix + '/swingvert/set':
-      hvac.setSwingVert(commands.swingVert.value[message])
-      return
-    case mqttTopicPrefix + '/power/set':
-      hvac.setPower(parseInt(message))
-      return
-    case mqttTopicPrefix + '/health/set':
-      hvac.setHealthMode(parseInt(message))
-      return
-    case mqttTopicPrefix + '/powersave/set':
-      hvac.setPowerSave(parseInt(message))
-      return
-    case mqttTopicPrefix + '/lights/set':
-      hvac.setLights(parseInt(message))
-      return
-    case mqttTopicPrefix + '/quiet/set':
-      hvac.setQuietMode(parseInt(message))
-      return
-    case mqttTopicPrefix + '/blow/set':
-      hvac.setBlow(parseInt(message))
-      return
-    case mqttTopicPrefix + '/air/set':
-      hvac.setAir(parseInt(message))
-      return
-    case mqttTopicPrefix + '/sleep/set':
-      hvac.setSleepMode(parseInt(message))
-      return
-    case mqttTopicPrefix + '/turbo/set':
-      hvac.setTurbo(parseInt(message))
-      return
+        else{
+          if(device.props[commands.power.code] === commands.power.value.off)
+            device.setPower(commands.power.value.on)
+          device.setMode(commands.mode.value[message])
+        }
+        return
+      case 'fanspeed':
+        device.setFanSpeed(commands.fanSpeed.value[message])
+        return
+      case 'swinghor':
+        device.setSwingHor(commands.swingHor.value[message])
+        return
+      case 'swingvert':
+        device.setSwingVert(commands.swingVert.value[message])
+        return
+      case 'power':
+        device.setPower(parseInt(message))
+        return
+      case 'health':
+        device.setHealthMode(parseInt(message))
+        return
+      case 'powersave':
+        device.setPowerSave(parseInt(message))
+        return
+      case 'lights':
+        device.setLights(parseInt(message))
+        return
+      case 'quiet':
+        device.setQuietMode(parseInt(message))
+        return
+      case 'blow':
+        device.setBlow(parseInt(message))
+        return
+      case 'air':
+        device.setAir(parseInt(message))
+        return
+      case 'sleep':
+        device.setSleepMode(parseInt(message))
+        return
+      case 'turbo':
+        device.setTurbo(parseInt(message))
+        return
+    }
   }
   console.log('[MQTT] No handler for topic %s', topic)
 })
