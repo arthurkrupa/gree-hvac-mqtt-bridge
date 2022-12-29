@@ -373,8 +373,16 @@ class Device {
      */
   setTemp (value, unit = cmd.temperatureUnit.value.celsius) {
     this._sendCommand(
-      [cmd.temperatureUnit.code, cmd.temperature.code],
-      [unit, value]
+      /**
+       * On my device, the return value is fine but the actual temperature does not change.
+       * Works normally after swapping unit and value.
+       * GOD Knows WHY !!!
+       * 
+       * [cmd.temperatureUnit.code, cmd.temperature.code],
+       * [unit, value]
+       */
+      [cmd.temperature.code, cmd.temperatureUnit.code],
+      [value, unit]
     )
   };
 
