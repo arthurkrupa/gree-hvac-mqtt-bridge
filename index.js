@@ -11,22 +11,6 @@ const argv = require('minimist')(process.argv.slice(2), {
 /**
  * Connect to device
  */
-let __mqttTopicPrefix = argv['mqtt-topic-prefix']
-if(!__mqttTopicPrefix.endsWith('/'))
-  __mqttTopicPrefix += '/'
-const mqttTopicPrefix = __mqttTopicPrefix
-
-const pubmqttOptions = {
-  retain: false
-}
-if (argv['mqtt-retain']) {
-  pubmqttOptions.retain = (argv['mqtt-retain'] == "true")
-}
-
-const publish2mqtt = function (newValue, mqttTopic) {
-  client.publish(mqttTopicPrefix + mqttTopic + '/get', newValue.toString(), pubmqttOptions)
-}
-
 const skipCmdNames = ['temperatureUnit']
 const onStatus = function(deviceModel, changed) {
   for(let name in changed){
@@ -58,6 +42,7 @@ const onSetup = function(deviceModel){
 const deviceOptions = {
   host: argv['hvac-host'],
   controllerOnly: argv['controllerOnly'] ? true : false,
+  pollingInterval: parseInt(argv['polling-interval'])*1000 || 3000,
   onStatus: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
     console.log('[UDP] Status changed on %s: %s', deviceModel.name, changed)
@@ -77,6 +62,21 @@ let hvac
 /**
  * Connect to MQTT broker
  */
+let __mqttTopicPrefix = argv['mqtt-topic-prefix']
+if(!__mqttTopicPrefix.endsWith('/'))
+  __mqttTopicPrefix += '/'
+const mqttTopicPrefix = __mqttTopicPrefix
+
+const pubmqttOptions = {
+  retain: false
+}
+if (argv['mqtt-retain']) {
+  pubmqttOptions.retain = (argv['mqtt-retain'] == "true")
+}
+
+const publish2mqtt = function (newValue, mqttTopic) {
+  client.publish(mqttTopicPrefix + mqttTopic + '/get', newValue.toString(), pubmqttOptions)
+}
 
 const mqttOptions = {}
 let authLog = ''

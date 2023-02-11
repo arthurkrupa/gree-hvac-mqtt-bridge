@@ -14,6 +14,7 @@ class Controller {
      * @param {object} [options] Options
      * @param {string} [options.address] HVAC IP address
      * @param {boolean} [options.controllerOnly] Whether to just a controller, does not contain functions (usually VRF)
+     * @param {number} [options.pollingInterval] Interval to poll the device for status (unit: ms)
      * @callback [options.onStatus] Callback function run on each status update
      * @callback [options.onUpdate] Callback function run after command
      * @callback [options.onSetup] Callback function run once device is setup
@@ -24,6 +25,7 @@ class Controller {
     this.options = {
       host: options.host || '192.168.1.255',
       controllerOnly: options.controllerOnly || false,
+      pollingInterval: options.pollingInterval || 3000,
       onStatus: options.onStatus || function () {},
       onUpdate: options.onUpdate || function () {},
       onSetup: options.onSetup || function () {},
@@ -279,6 +281,7 @@ class Device {
 
     this.controller = parent
     this.isSubDev = options.isSubDev
+    this.pollingInterval = this.controller.options.pollingInterval
 
     this.mac = options.mac
     this.name = options.name
@@ -287,7 +290,7 @@ class Device {
     this.props = {}
 
     // Start requesting device status on set interval
-    setInterval(this.controller._requestDeviceStatus.bind(this.controller, this), 3000)
+    setInterval(this.controller._requestDeviceStatus.bind(this.controller, this), this.pollingInterval)
     this.callbacks.onSetup(this)
   }
 
