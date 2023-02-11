@@ -296,6 +296,10 @@ class Device {
     for(let key in changedProps){
       let name = Object.keys(cmd).find(k => cmd[k].code === key)
       let state
+      if(!name){
+        console.log("[prepareCallback] Unknown Prop Name %s: %s", key, changedProps)
+        continue
+      }
       if(cmd[name].value)
         state = Object.keys(cmd[name].value).find(k => cmd[name].value[k] === changedProps[key])
       else
