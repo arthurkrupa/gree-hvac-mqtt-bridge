@@ -16,7 +16,7 @@ class HOMEASSISTANT_DISCOVERY{
         this.debug = options.debug || false
 
         if(!options.device_mac || !options.device_name || !options.mqttClient || !options.mqttDeviceTopic)
-            throw '[HomeAssistant_Discovery][Fatal] Missing required parameter.'
+            throw '[HOMEASSISTANT_DISCOVERY][Fatal] Missing required parameter.'
         this.device_mac = options.device_mac
         this.device_name = options.device_name
         this.mqttClient = options.mqttClient
@@ -35,19 +35,35 @@ class HOMEASSISTANT_DISCOVERY{
         }
 
         this.registered = []
+        this.allowCommands = ['climate', 'power', 'sleep', 'turbo', 'powersave', 'health', 'lights', 'blow', 'quiet', 'quiet_as_switch', 'air']
+        this.enabledCommands = []
+    }
+
+    REGISTER(commands){
+        const default_commands = ['climate', 'power']
+        this._register_climate()
+        this._register_power()
+        this.enabledCommands.push('climate', 'power')
+
+        if(commands)
+            for(let cmd of commands){
+                if(default_commands.includes(cmd)){
+                    console.log("[HOMEASSISTANT_DISCOVERY][Notice] %s is an command that is enabled by default, skipped.")
+                    continue
+                }
+                if(!this.allowCommands.includes(cmd)){
+                    console.log("[HOMEASSISTANT_DISCOVERY][Warning] %s is a disallowed command, skipped.")
+                    continue
+                }
+                eval('this._register_' + cmd + '()')
+                this.enabledCommands.push(cmd)
+            }
+
+        console.log("[HOMEASSISTANT_DISCOVERY] %s registered.", this.enabledCommands.join(','))
     }
 
     REGISTER_ALL(){
-        this._register_climate()
-        this._register_power()
-        this._register_sleep()
-        this._register_turbo()
-        this._register_powersave()
-        this._register_health()
-        this._register_lights()
-        this._register_blow()
-        this._register_quiet()
-        this._register_air()
+        this.REGISTER(this.allowCommands)
     }
 
     _interval_register(fn){

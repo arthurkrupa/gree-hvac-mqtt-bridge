@@ -58,7 +58,10 @@ const onSetup = function(deviceModel){
       mqttDeviceTopic: mqttTopicPrefix + deviceModel.mac,
       mqttPubOptions: pubmqttOptions
     })
-    HA_DISCOVERY.REGISTER_ALL()
+    let enabled_commands
+    if(argv['homeassistant-mqtt-discovery-enable'])
+      enabled_commands = argv['homeassistant-mqtt-discovery-enable'].split(',')
+    HA_DISCOVERY.REGISTER(enabled_commands)
   }
 }
 
