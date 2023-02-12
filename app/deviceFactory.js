@@ -324,7 +324,7 @@ class Device {
       else
         state = changedProps[key]
       res[name] = {value: changedProps[key], state}
-      this.debug && console.log("[UDP][Debug][Status Change] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
+      this.debug && console.log("[UDP][Debug][Status Prepare] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
     }
     return res
   }

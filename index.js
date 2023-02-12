@@ -56,6 +56,12 @@ const onSetup = function(deviceModel){
       client.subscribe(mqttTopicPrefix + name.toLowerCase() + '/set')
   }
   /**
+   * Publish all status every 10 mins.
+   */
+  setTimeout(() => {
+    onStatus(deviceModel, deviceModel._prepareCallback(deviceModel.props))
+  }, 600*1000)
+  /**
    * HomeAssistant MQTT Discovery
    */
   if(argv['homeassistant-mqtt-discovery']){
