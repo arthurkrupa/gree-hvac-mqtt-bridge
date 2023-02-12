@@ -6,6 +6,7 @@ const commands = require('../app/commandEnums')
  * @param {boolean} [options.debug]
  * @param {string} [options.device_mac]
  * @param {string} [options.device_name]
+ * @param {string} [options.device_temperatureUnit] C/F
  * @param {MqttClient} [options.mqttClient]
  * @param {string} [options.mqttDeviceTopic]
  * @param {object} [options.mqttPubOptions]
@@ -19,6 +20,8 @@ class HOMEASSISTANT_DISCOVERY{
             throw '[HOMEASSISTANT_DISCOVERY][Fatal] Missing required parameter.'
         this.device_mac = options.device_mac
         this.device_name = options.device_name
+        this.device_temperatureUnit = options.device_temperatureUnit || undefined
+        
         this.mqttClient = options.mqttClient
         this.mqttDeviceTopic = options.mqttDeviceTopic
         this.mqttPubOptions = options.mqttPubOptions || {}
@@ -41,7 +44,7 @@ class HOMEASSISTANT_DISCOVERY{
 
     REGISTER(commands){
         const default_commands = ['climate', 'power']
-        this._register_climate()
+        this._register_climate(this.device_temperatureUnit)
         this._register_power()
         this.enabledCommands.push('climate', 'power')
 

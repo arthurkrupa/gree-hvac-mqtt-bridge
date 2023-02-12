@@ -54,6 +54,11 @@ const onSetup = function(deviceModel){
       debug,
       device_mac: deviceModel.mac,
       device_name: deviceModel.name,
+      device_temperatureUnit: Object
+                                .keys(commands.temperatureUnit.value)
+                                .find(k => commands.temperatureUnit.value[k] === deviceModel.props[commands.temperatureUnit.code])
+                                .substring(0, 1)
+                                .toUpperCase(),
       mqttClient: client,
       mqttDeviceTopic: mqttTopicPrefix + deviceModel.mac,
       mqttPubOptions: pubmqttOptions
