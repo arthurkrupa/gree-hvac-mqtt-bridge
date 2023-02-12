@@ -142,7 +142,7 @@ client.on('message', (topic, message) => {
   console.log('[MQTT] Message "%s" received for %s', message, topic)
 
   if(topic.startsWith(mqttTopicPrefix)){
-    let t = topic.substr(mqttTopicPrefix.length).split('/')
+    let t = topic.substring(mqttTopicPrefix.length).split('/')
     if(t.length === 2)
       t.unshift(hvac.controller.mac)
     let device = hvac.controller.devices[t[0]]
