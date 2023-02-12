@@ -9,23 +9,32 @@ const argv = require('minimist')(process.argv.slice(2), {
 })
 
 /**
+ * Debug Flag
+ */
+const debug = argv['debug'] ? true : false
+
+/**
  * Connect to device
  */
 const skipCmdNames = ['temperatureUnit']
+const publicValDirect = ['power','health','powerSave','lights','quiet','blow','sleep','turbo']
 const onStatus = function(deviceModel, changed) {
   for(let name in changed){
     if(skipCmdNames.includes(name))
       continue
+    let val = changed[name].state
+    if(publicValDirect.includes(name))
+      val = changed[name].value
     /**
      * Handle "off" mode status
      * Hass.io MQTT climate control doesn't support power commands through GUI,
      * so an additional pseudo mode is added
      */
     if(name === 'mode' && deviceModel.props[commands.power.code] === commands.power.value.off)
-      changed[name] = 'off'
-    publish2mqtt(changed[name], deviceModel.mac+'/'+name.toLowerCase())
+      val = 'off'
+    publish2mqtt(val, deviceModel.mac+'/'+name.toLowerCase())
     if(!deviceModel.isSubDev)
-      publish2mqtt(changed[name], name.toLowerCase())
+      publish2mqtt(val, name.toLowerCase())
   }
 }
 
@@ -43,6 +52,7 @@ const deviceOptions = {
   host: argv['hvac-host'],
   controllerOnly: argv['controllerOnly'] ? true : false,
   pollingInterval: parseInt(argv['polling-interval'])*1000 || 3000,
+  debug: debug,
   onStatus: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
     console.log('[UDP] Status changed on %s: %s', deviceModel.name, changed)

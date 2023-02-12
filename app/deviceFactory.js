@@ -15,6 +15,7 @@ class Controller {
      * @param {string} [options.address] HVAC IP address
      * @param {boolean} [options.controllerOnly] Whether to just a controller, does not contain functions (usually VRF)
      * @param {number} [options.pollingInterval] Interval to poll the device for status (unit: ms)
+     * @param {boolean} [options.debug] Whether to output debug information
      * @callback [options.onStatus] Callback function run on each status update
      * @callback [options.onUpdate] Callback function run after command
      * @callback [options.onSetup] Callback function run once device is setup
@@ -26,11 +27,14 @@ class Controller {
       host: options.host || '192.168.1.255',
       controllerOnly: options.controllerOnly || false,
       pollingInterval: options.pollingInterval || 3000,
+      debug: options.debug || false,
       onStatus: options.onStatus || function () {},
       onUpdate: options.onUpdate || function () {},
       onSetup: options.onSetup || function () {},
       onConnected: options.onConnected || function () {}
     }
+
+    this.debug = this.options.debug
 
     /**
          * Controller object
@@ -287,11 +291,23 @@ class Device {
     this.name = options.name
     this.callbacks = options.callbacks
 
+    this.debug = this.controller.debug
+
     this.props = {}
 
     // Start requesting device status on set interval
     setInterval(this.controller._requestDeviceStatus.bind(this.controller, this), this.pollingInterval)
-    this.callbacks.onSetup(this)
+
+    // Wait props update, then call onSetup
+    let waiting;
+    (waiting = () => {
+      if(Object.keys(this.props).length > 0){
+        this.callbacks.onSetup(this)
+        return
+      }
+      setTimeout(waiting.bind(this), 1000)
+    })()
+
   }
 
   _prepareCallback (changedProps) {
@@ -300,14 +316,15 @@ class Device {
       let name = Object.keys(cmd).find(k => cmd[k].code === key)
       let state
       if(!name){
-        console.log("[prepareCallback] Unknown Prop Name %s: %s", key, changedProps)
+        this.debug && console.log("[Debug][prepareCallback] Unknown Prop Name %s: %s", key, changedProps)
         continue
       }
       if(cmd[name].value)
         state = Object.keys(cmd[name].value).find(k => cmd[name].value[k] === changedProps[key])
       else
         state = changedProps[key]
-      res[name] = state
+      res[name] = {value: changedProps[key], state}
+      this.debug && console.log("[Debug][Status Change] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
     }
     return res
   }
