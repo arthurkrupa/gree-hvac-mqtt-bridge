@@ -46,6 +46,20 @@ const onSetup = function(deviceModel){
     if(!deviceModel.isSubDev)
       client.subscribe(mqttTopicPrefix + name.toLowerCase() + '/set')
   }
+  /**
+   * HomeAssistant MQTT Discovery
+   */
+  if(argv['homeassistant-mqtt-discovery']){
+    const HA_DISCOVERY = require('./discovery/homeassistant').publish({
+      debug,
+      device_mac: deviceModel.mac,
+      device_name: deviceModel.name,
+      mqttClient: client,
+      mqttDeviceTopic: mqttTopicPrefix + deviceModel.mac,
+      mqttPubOptions: pubmqttOptions
+    })
+    HA_DISCOVERY.REGISTER_ALL()
+  }
 }
 
 const deviceOptions = {
