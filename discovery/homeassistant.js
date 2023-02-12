@@ -78,7 +78,7 @@ class HOMEASSISTANT_DISCOVERY{
 
         let fn;(fn = () => {
             this.mqttClient.publish(
-                'TTTTThomeassistant/' + component + '/' + this.unique_id + entityName + '/config',
+                'homeassistant/' + component + '/' + this.unique_id + entityName + '/config',
                 JSON.stringify(Object.assign({
                     'unique_id': this.unique_id + entityName,
                     'object_id': component + '.' + this.unique_id + entityName
