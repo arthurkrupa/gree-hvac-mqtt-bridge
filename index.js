@@ -19,6 +19,11 @@ const debug = argv['debug'] ? true : false
 const skipCmdNames = ['temperatureUnit']
 const publicValDirect = ['power','health','powerSave','lights','quiet','blow','sleep','turbo']
 const onStatus = function(deviceModel, changed) {
+  const publish = (name, val) => {
+    publish2mqtt(val, deviceModel.mac+'/'+name.toLowerCase())
+    if(!deviceModel.isSubDev)
+      publish2mqtt(val, name.toLowerCase())
+  }
   for(let name in changed){
     if(skipCmdNames.includes(name))
       continue
@@ -32,9 +37,13 @@ const onStatus = function(deviceModel, changed) {
      */
     if(name === 'mode' && deviceModel.props[commands.power.code] === commands.power.value.off)
       val = 'off'
-    publish2mqtt(val, deviceModel.mac+'/'+name.toLowerCase())
-    if(!deviceModel.isSubDev)
-      publish2mqtt(val, name.toLowerCase())
+    if(name === 'power'){
+      if(changed[name].state === 'on')
+        publish('mode', Object.keys(commands.mode.value).find(k => deviceModel.props[commands.mode.code] === commands.mode.value[k]))
+      else if(changed[name].state === 'off')
+        publish('mode', 'off')
+    }
+      publish(name, val)
   }
 }
 
