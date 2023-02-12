@@ -81,7 +81,7 @@ class HOMEASSISTANT_DISCOVERY{
                 'homeassistant/' + component + '/' + this.unique_id + entityName + '/config',
                 JSON.stringify(Object.assign({
                     'unique_id': this.unique_id + entityName,
-                    'object_id': component + '.' + this.unique_id + entityName
+                    'object_id': this.unique_id + entityName
                 }, this.DEVMSG, msg)),
                 Object.assign({}, this.mqttPubOptions, {retain: true})
             )
