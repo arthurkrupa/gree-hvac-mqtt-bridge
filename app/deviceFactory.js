@@ -316,7 +316,7 @@ class Device {
       let name = Object.keys(cmd).find(k => cmd[k].code === key)
       let state
       if(!name){
-        this.debug && console.log("[Debug][prepareCallback] Unknown Prop Name %s: %s", key, changedProps)
+        this.debug && console.log("[UDP][Debug][prepareCallback] Unknown Prop Name %s: %s", key, changedProps)
         continue
       }
       if(cmd[name].value)
@@ -324,7 +324,7 @@ class Device {
       else
         state = changedProps[key]
       res[name] = {value: changedProps[key], state}
-      this.debug && console.log("[Debug][Status Change] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
+      this.debug && console.log("[UDP][Debug][Status Change] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
     }
     return res
   }
