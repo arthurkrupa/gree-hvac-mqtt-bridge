@@ -41,7 +41,8 @@ module.exports = {
       mediumLow: 2, // not available on 3-speed units
       medium: 3,
       mediumHigh: 4, // not available on 3-speed units
-      high: 5
+      high: 5,
+      turbo: 6, //Some new devices use WdSpd:6 instead of Tur:1
     }
   },
   // fresh air valve

@@ -19,15 +19,19 @@ node index.js \
     --mqtt-broker-url="mqtt://localhost" \
     --mqtt-topic-prefix="home/greehvac" \
     --mqtt-username="" \
-    --mqtt-password=""
+    --mqtt-password="" \
+    [--controllerOnly]
 ```
+When the host is only a controller and not an air conditioner, add `controllerOnly` option. VRF is usually the case.
 
 ## Supported commands
 
 MQTT topic scheme:
 
 - `MQTT_TOPIC_PREFIX/COMMAND/get` Get value
+- `MQTT_TOPIC_PREFIX/[SubDev MAC]/COMMAND/get` Get value (accessing sub devices)
 - `MQTT_TOPIC_PREFIX/COMMAND/set` Set value
+- `MQTT_TOPIC_PREFIX/[SubDev MAC]/COMMAND/set` Set value (accessing sub devices)
 
 Note: _boolean_ values are set using 0 or 1
 
