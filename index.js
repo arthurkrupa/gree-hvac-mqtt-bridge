@@ -59,6 +59,7 @@ const publishIfChanged = function (stateProp, newValue, mqttTopic) {
 
 const deviceOptions = {
   host: argv['hvac-host'],
+  localPort: argv['local-port'],
   onStatus: (deviceModel) => {
     publishIfChanged('temperature', deviceModel.props[commands.temperature.code].toString(), '/temperature/get')
     publishIfChanged('fanSpeed', getKeyByValue(commands.fanSpeed.value, deviceModel.props[commands.fanSpeed.code]).toString(), '/fanspeed/get')
@@ -167,31 +168,31 @@ client.on('message', (topic, message) => {
       hvac.setSwingVert(commands.swingVert.value[message])
       return
     case mqttTopicPrefix + '/power/set':
-      hvac.setPower(parseInt(message))
+      hvac.setPower(commands.power.value[message])
       return
     case mqttTopicPrefix + '/health/set':
-      hvac.setHealthMode(parseInt(message))
+      hvac.setHealthMode(commands.health.value[message])
       return
     case mqttTopicPrefix + '/powersave/set':
-      hvac.setPowerSave(parseInt(message))
+      hvac.setPowerSave(commands.powerSave.value[message])
       return
     case mqttTopicPrefix + '/lights/set':
-      hvac.setLights(parseInt(message))
+      hvac.setLights(commands.lights.value[message])
       return
     case mqttTopicPrefix + '/quiet/set':
-      hvac.setQuietMode(parseInt(message))
+      hvac.setQuietMode(commands.quiet.value[message])
       return
     case mqttTopicPrefix + '/blow/set':
-      hvac.setBlow(parseInt(message))
+      hvac.setBlow(commands.blow.value[message])
       return
     case mqttTopicPrefix + '/air/set':
-      hvac.setAir(parseInt(message))
+      hvac.setAir(commands.air.value[message])
       return
     case mqttTopicPrefix + '/sleep/set':
-      hvac.setSleepMode(parseInt(message))
+      hvac.setSleepMode(commands.sleep.value[message])
       return
     case mqttTopicPrefix + '/turbo/set':
-      hvac.setTurbo(parseInt(message))
+      hvac.setTurbo(commands.turbo.value[message])
       return
   }
   console.log('[MQTT] No handler for topic %s', topic)

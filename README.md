@@ -38,15 +38,15 @@ Note: _boolean_ values are set using 0 or 1
 | **fanspeed** | _auto_, _low_, _mediumLow_, _medium_, _mediumHigh_, _high_ | Fan speed |
 | **swinghor** | _default_, _full_, _fixedLeft_, _fixedMidLeft_, _fixedMid_, _fixedMidRight_, _fixedRight_ | Horizontal Swing |
 | **swingvert** | _default_, _full_, _fixedTop_, _fixedMidTop_, _fixedMid_, _fixedMidBottom_, _fixedBottom_, _swingBottom_, _swingMidBottom_, _swingMid_, _swingMidTop_, _swingTop_ | Vetical swing |
-| **power** | _0_, _1_ | Turn device on/off |
-| **health** | _0_, _1_ | Health ("Cold plasma") mode, only for devices equipped with "anion generator", which absorbs dust and kills bacteria |
-| **powersave** | _0_, _1_ | Power Saving mode |
-| **lights** | _0_, _1_ | Turn on/off device lights |
-| **quiet** | _0_, _1_, _2_, _3_ | Quiet modes |
-| **blow** | _0_, _1_ | Keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode) |
+| **power** | _off_, _on_ | Turn device on/off |
+| **health** | _off_, _on_ | Health ("Cold plasma") mode, only for devices equipped with "anion generator", which absorbs dust and kills bacteria |
+| **powersave** | _off_, _on_ | Power Saving mode |
+| **lights** | _off_, _on_ | Turn on/off device lights |
+| **quiet** | _off_, _mode1_, _mode2_, _mode3_ | Quiet modes |
+| **blow** | _off_, _on_ | Keeps the fan running for a while after shutting down (also called "X-Fan", only usable in Dry and Cool mode) |
 | **air** | _off_, _inside_, _outside_, _mode3_ | Fresh air valve |
-| **sleep** | _0_, _1_ | Sleep mode |
-| **turbo** | _0_, _1_ | Turbo mode |
+| **sleep** | _off_, _on_ | Sleep mode |
+| **turbo** | _off_, _on_ | Turbo mode |
 
 ## Hass.io addon
 
@@ -251,3 +251,4 @@ This project is licensed under the GNU GPLv3 - see the [LICENSE.md](LICENSE.md) 
 - [arthurkrupa](https://https://github.com/arthurkrupa) for the actual service
 - [bkbilly](https://github.com/bkbilly) for service improvements to MQTT
 - [aaronsb](https://github.com/aaronsb) for sweeping the Node floor
+- [eibenp](https://github.com/eibenp) for V2 protol support
